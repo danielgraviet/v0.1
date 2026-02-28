@@ -7,7 +7,7 @@ context, fresh results.
 
 Pipeline order inside execute():
     1. Initialize StructuredMemory for this run
-    2. Run signal extraction (Phase 3 placeholder — empty for now)
+    2. Run signal extraction via SignalExtractor (deterministic analyzers)
     3. Build AgentContext from memory
     4. Execute all agents in parallel via ParallelExecutor
     5. Validate each result via JudgeLayer
@@ -30,6 +30,7 @@ from core.registry import AgentRegistry
 from judge.judge import JudgeLayer
 from schemas.incident import IncidentInput
 from schemas.result import ExecutionResult
+from signals.signal_extractor import SignalExtractor
 
 logger = logging.getLogger(__name__)
 
@@ -90,7 +91,7 @@ class AlphaRuntime:
 
         Steps:
             1. Initialize fresh StructuredMemory for this run
-            2. Signal extraction placeholder (Phase 3 will fill this in)
+            2. Signal extraction via SignalExtractor (deterministic analyzers)
             3. Build AgentContext from memory signals + incident
             4. Dispatch all agents in parallel via ParallelExecutor
             5. Validate each result through JudgeLayer
@@ -118,11 +119,10 @@ class AlphaRuntime:
         memory = StructuredMemory()
 
         # Step 2 — signal extraction.
-        # Phase 3 will replace this with a real SignalExtractor. For now the
-        # memory stays empty and agents receive no pre-extracted signals.
-        # The judge's signal ID cross-reference check will pass vacuously
-        # if agents cite no signals, and will catch hallucinated IDs once
-        # real signals are present.
+        # SignalExtractor runs all deterministic analyzers (log, metrics,
+        # commit, config) and returns a stable, ID-assigned signal list.
+        # Signals are written into memory so the judge can cross-reference
+        # hypothesis citations against verified facts.
         signals = self._extract_signals(payload, memory)
         logger.debug("Signal extraction complete. %d signals in memory.", len(signals))
 
@@ -186,25 +186,20 @@ class AlphaRuntime:
     # ── Private helpers ───────────────────────────────────────────────────────
 
     def _extract_signals(self, payload: IncidentInput, memory: StructuredMemory) -> list:
-        """Placeholder for Phase 3 signal extraction.
+        """Run the deterministic signal extraction layer (Phase 3).
 
-        Phase 3 will replace this method with a real SignalExtractor that
-        parses logs, metrics, commits, and config snapshots into typed
-        Signal objects and writes them into memory.
-
-        For now this is a no-op. The empty signal list is a valid starting
-        state — agents that generate hypotheses citing real signal IDs will
-        be rejected by the judge (which is correct behaviour: no signals
-        means no grounded evidence). Stub agents used in smoke tests should
-        add signals to memory manually before calling execute(), or bypass
-        this by constructing a runtime with pre-seeded memory.
+        Delegates to SignalExtractor, which orchestrates all four analyzers
+        (log, metrics, commit, config) and assigns sequential IDs. The
+        resulting signals are written into StructuredMemory so the judge
+        can cross-reference hypothesis citations against verified facts.
 
         Args:
-            payload: The raw incident data (unused until Phase 3).
-            memory: The StructuredMemory for this run. Phase 3 will call
-                memory.add_signals() here.
+            payload: The validated incident input.
+            memory: The StructuredMemory for this run.
 
         Returns:
-            The current signal list from memory (empty until Phase 3).
+            The signal list written to memory.
         """
+        signals = SignalExtractor().extract(payload)
+        memory.add_signals(signals)
         return memory.get_signals()
