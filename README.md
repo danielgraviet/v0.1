@@ -47,14 +47,36 @@ git clone https://github.com/danielgraviet/v0.1.git
 cd v0.1
 ```
 
-**2. Install dependencies**
-
-`uv` reads `pyproject.toml` and the lockfile to install an exact, reproducible environment:
+**Quick commands (canonical)**
 ```bash
-uv sync
+make setup   # install dependencies
+make test    # run offline tests (no network)
+make test-live  # run live API tests (requires OPENROUTER_API_KEY + network)
+make run     # run entrypoint
+make verify  # compile check + tests
 ```
 
-This creates a `.venv/` directory and installs all dependencies pinned to the versions in `uv.lock`. No internet variance — every dev gets the same packages.
+**Tooling commands (what they do)**
+- `make setup`: runs `uv sync --dev` to install app + dev dependencies into `.venv` (preferred onboarding path).
+- `make run`: runs `main.py` using the project virtualenv.
+- `make test`: runs deterministic/offline pytest only (`-m "not live"`), so it works in CI and no-network environments.
+- `make test-live`: runs only live API tests (`-m "live"`), intended for explicit OpenRouter connectivity checks.
+- `make check`: runs `python -m compileall -q .` to catch syntax/import-level issues quickly.
+- `make verify`: runs `check` then `test` as the default pre-commit sanity check.
+
+**2. Install dependencies**
+
+Use:
+```bash
+make setup
+```
+
+This creates a `.venv/` directory and installs all dependencies pinned in `uv.lock`.
+
+Manual equivalent (optional):
+```bash
+uv sync --dev
+```
 
 **3. Configure your API key**
 

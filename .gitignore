@@ -1,2 +1,4 @@
 .env
 .dmux
+__pycache__/
+*.pyc
