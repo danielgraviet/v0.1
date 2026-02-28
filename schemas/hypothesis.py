@@ -42,7 +42,7 @@ class Hypothesis(BaseModel):
     supporting_signals: list[str]
     contributing_agent: str
 
-    @field_validator("confidence") # what is this doing?
+    @field_validator("confidence") # before accepting this fields value, runs it through this func.
     @classmethod
     def confidence_must_be_valid(cls, v: float) -> float:
         """Enforce that confidence is a valid probability value.

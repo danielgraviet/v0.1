@@ -1,0 +1,110 @@
+<mxfile host="app.diagrams.net" modified="2026-02-28T00:00:00.000Z" agent="Codex" version="24.7.17" type="device">
+  <diagram id="alpha-overview" name="Alpha Overview">
+    <mxGraphModel dx="1600" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <mxCell id="title" value="How Alpha Finds Root Causes Faster During Incidents" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=24;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="350" y="20" width="900" height="40" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="lane1" value="Problem" style="swimlane;html=1;rounded=1;strokeColor=#B85450;fillColor=#F8CECC;fontSize=16;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="90" width="360" height="620" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="lane2" value="What Alpha Does" style="swimlane;html=1;rounded=1;strokeColor=#6C8EBF;fillColor=#DAE8FC;fontSize=16;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="430" y="90" width="700" height="620" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="lane3" value="Outcome" style="swimlane;html=1;rounded=1;strokeColor=#82B366;fillColor=#D5E8D4;fontSize=16;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1160" y="90" width="360" height="620" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="p1" value="Incident starts after deploy" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="80" y="170" width="280" height="70" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="p2" value="Team is overloaded and&#xa;debugging is fragmented" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="80" y="290" width="280" height="90" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="a1" value="Alpha ingests incident context&#xa;(logs + metrics + commits + config)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="500" y="130" width="560" height="80" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="a2" value="Extract verified signals&#xa;(deterministic facts first)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="500" y="250" width="560" height="80" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="a3" value="Run parallel AI investigators&#xa;(logs, metrics, commits, config)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="500" y="370" width="560" height="80" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="a4" value="Rank most likely root causes&#xa;(judge + aggregation)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="500" y="490" width="560" height="80" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="decision" value="Human approval gate&#xa;(Alpha advises, humans decide)" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="650" y="610" width="260" height="120" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="o1" value="Top likely causes with confidence" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="220" width="280" height="90" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="o2" value="Faster recovery, less chaos,&#xa;lower MTTR" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="390" width="280" height="90" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="callout1" value="Why trust it:&#xa;Facts first, AI interpretation second" style="shape=note;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="520" y="730" width="260" height="90" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="callout2" value="Why fast:&#xa;Specialists run in parallel" style="shape=note;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="800" y="730" width="260" height="90" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="b1" value="Before Alpha: manual, slow, fragmented" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F5F5;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="120" y="730" width="360" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="b2" value="With Alpha: structured, parallel, faster decisions" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1F5E1;strokeColor=#82B366;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="1120" y="730" width="360" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e1" edge="1" parent="1" source="p1" target="p2" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#B85450;rounded=0;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e2" edge="1" parent="1" source="p2" target="a1" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#6C8EBF;rounded=0;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e3" edge="1" parent="1" source="a1" target="a2" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#6C8EBF;rounded=0;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e4" edge="1" parent="1" source="a2" target="a3" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#6C8EBF;rounded=0;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e5" edge="1" parent="1" source="a3" target="a4" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#6C8EBF;rounded=0;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e6" edge="1" parent="1" source="a4" target="decision" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#D6B656;rounded=0;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e7" edge="1" parent="1" source="decision" target="o1" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#82B366;rounded=0;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e8" edge="1" parent="1" source="o1" target="o2" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#82B366;rounded=0;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

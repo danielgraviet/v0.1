@@ -61,5 +61,5 @@ class ExecutionResult(BaseModel):
 
     ranked_hypotheses: list[Hypothesis]
     signals_used: list[Signal]
-    execution_id: str = Field(default_factory=lambda: str(uuid.uuid4())) # what is this Field / default_factory doing
+    execution_id: str = Field(default_factory=lambda: str(uuid.uuid4())) # calls this function fresh each time a new instance is created.
     requires_human_review: bool
