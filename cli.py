@@ -12,26 +12,32 @@ MetricsAgent, CommitAgent) to run against live Sentry data.
 """
 
 import asyncio
+import json
+import pathlib
 
 from rich.console import Console
 from rich.table import Table
 
 from agents.base import AgentContext, BaseAgent
-from core.memory import StructuredMemory
 from core.runtime import AlphaRuntime
 from display.live import LiveDisplay
 from schemas.hypothesis import Hypothesis
 from schemas.incident import IncidentInput
 from schemas.result import AgentResult
-from schemas.signal import Signal
 
 console = Console()
+
+_FIXTURE = pathlib.Path(__file__).parent / "fixtures" / "incident_b.json"
 
 
 # ── Demo stub agents ──────────────────────────────────────────────────────────
 # Simulate the Phase 4 SRE agents with asyncio.sleep() so the live panels
 # are visually interesting. Each agent takes a different amount of time so
 # you can see them completing independently — proving parallel execution.
+#
+# Signal IDs (sig_001 … sig_012) come from the real SignalExtractor running
+# against incident_b.json. Agents cite the IDs the judge will actually find
+# in StructuredMemory.
 #
 # Phase 4: replace these classes with the real agents from sre/agents/.
 
@@ -48,10 +54,14 @@ class LogAgent(BaseAgent):
             hypotheses=[
                 Hypothesis(
                     label="Error Rate Spike",
-                    description="Error rate 3.1x above baseline — consistent with DB connection exhaustion causing request failures",
+                    description=(
+                        "Error rate 61% — 60x above baseline. "
+                        "Dominant pattern: GET /api/users timeouts. "
+                        "Consistent with DB connection exhaustion starving requests."
+                    ),
                     confidence=0.85,
                     severity="high",
-                    supporting_signals=["sig_001"],
+                    supporting_signals=["sig_001", "sig_002"],
                     contributing_agent=self.name,
                 )
             ],
@@ -72,10 +82,14 @@ class MetricsAgent(BaseAgent):
             hypotheses=[
                 Hypothesis(
                     label="DB Connection Pool Exhaustion",
-                    description="Pool at 100% capacity (5/5). Requests are queuing and timing out. Reduced pool size is the likely cause.",
+                    description=(
+                        "Pool 100% saturated (5/5). p99 latency 40x above baseline. "
+                        "Cache hit rate collapsed from 82% to 8%. "
+                        "Requests queuing and timing out."
+                    ),
                     confidence=0.91,
                     severity="high",
-                    supporting_signals=["sig_002"],
+                    supporting_signals=["sig_004", "sig_005", "sig_006"],
                     contributing_agent=self.name,
                 )
             ],
@@ -96,47 +110,19 @@ class CommitAgent(BaseAgent):
             hypotheses=[
                 Hypothesis(
                     label="DB Connection Pool Exhaustion",
-                    description="Commit e4f5g6h reduced MAX_DB_CONNECTIONS from 20 to 5. Combined with cache removal in a1b2c3d, this saturated the pool.",
+                    description=(
+                        "Commit e4f5g6h reduced MAX_DB_CONNECTIONS from 20 to 5. "
+                        "Commit a1b2c3d removed @cache decorator and added an unindexed JOIN. "
+                        "Combined: cache miss cascade overwhelmed a pool already at 25% capacity."
+                    ),
                     confidence=0.88,
                     severity="high",
-                    supporting_signals=["sig_001", "sig_002"],
+                    supporting_signals=["sig_007", "sig_008", "sig_009"],
                     contributing_agent=self.name,
                 )
             ],
             execution_time_ms=1500.0,
         )
-
-
-# ── Demo runtime ──────────────────────────────────────────────────────────────
-
-class _DemoRuntime(AlphaRuntime):
-    """Seeds StructuredMemory with fixture signals so the judge passes.
-
-    Overrides the Phase 3 placeholder. Phase 3 will replace this with a
-    real SignalExtractor — at that point this class can be removed and
-    the plain AlphaRuntime used directly.
-    """
-
-    def _extract_signals(self, payload: IncidentInput, memory: StructuredMemory) -> list:
-        memory.add_signals([
-            Signal(
-                id="sig_001",
-                type="log_anomaly",
-                description="Error rate 3.1x above baseline",
-                value=3.1,
-                severity="high",
-                source="log_analyzer",
-            ),
-            Signal(
-                id="sig_002",
-                type="resource_saturation",
-                description="DB connection pool 100% saturated (5/5)",
-                value=1.0,
-                severity="high",
-                source="metrics_analyzer",
-            ),
-        ])
-        return memory.get_signals()
 
 
 # ── Results table ─────────────────────────────────────────────────────────────
@@ -181,37 +167,10 @@ def _print_results(result) -> None:
 # ── Entry point ───────────────────────────────────────────────────────────────
 
 async def _run() -> None:
-    incident = IncidentInput(
-        deployment_id="deploy-v2.3.1-demo",
-        logs=[
-            "ERROR GET /api/users 500 timeout after 5000ms",
-            "ERROR DB connection pool exhausted",
-            "INFO  GET /api/users 200 45ms",
-        ],
-        metrics={
-            "latency_p99_ms": 4800,
-            "latency_baseline_p99_ms": 120,
-            "error_rate": 0.31,
-            "error_rate_baseline": 0.01,
-            "db_connection_pool_used": 5,
-            "db_connection_pool_max": 5,
-        },
-        recent_commits=[
-            {
-                "sha": "a1b2c3d",
-                "message": "Remove cache from user profile endpoint",
-                "diff_summary": "Removed @cache decorator from get_user_profile()",
-            },
-            {
-                "sha": "e4f5g6h",
-                "message": "Reduce DB pool for cost optimization",
-                "diff_summary": "Changed MAX_DB_CONNECTIONS from 20 to 5",
-            },
-        ],
-        config_snapshot={"MAX_DB_CONNECTIONS": 5, "CACHE_TTL_SECONDS": 0},
-    )
+    with open(_FIXTURE) as f:
+        incident = IncidentInput(**json.load(f))
 
-    runtime = _DemoRuntime()
+    runtime = AlphaRuntime()
     runtime.register(LogAgent())
     runtime.register(MetricsAgent())
     runtime.register(CommitAgent())
