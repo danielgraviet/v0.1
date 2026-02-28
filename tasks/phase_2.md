@@ -188,32 +188,64 @@ The runtime emits events as it runs (agent started, signal detected, agent compl
 
 ## Module Structure to Build
 
+This is a monorepo. `alpha/` contains two layers: the generic runtime (Phases 2) and the SRE vertical built on top of it (Phases 3–4). The runtime never imports from `sre/` — dependency flows one direction only.
+
 ```
 alpha/
-  core/
-    runtime.py        ← AlphaRuntime class
-    executor.py       ← ParallelExecutor
-    registry.py       ← AgentRegistry
-    memory.py         ← StructuredMemory
-  agents/
-    base.py           ← BaseAgent abstract class
-  llm/
-    base.py           ← LLMClient abstract base
-    openrouter.py     ← OpenRouterClient (primary)
-    cerebras.py       ← CerebrasClient (optional, post-hackathon)
-  judge/
-    judge.py          ← JudgeLayer (deterministic only)
-  aggregation/
-    aggregator.py     ← Aggregator
-  display/
-    live.py           ← Rich live display (agent panels)
-  schemas/
-    signal.py         ← Signal model
-    hypothesis.py     ← Hypothesis model
-    incident.py       ← IncidentInput model
-    result.py         ← ExecutionResult, AgentResult
-    events.py         ← AgentEvent (for display layer)
+│
+├── # ── RUNTIME LAYER (generic, reusable across verticals) ─────────
+│
+├── core/
+│   ├── runtime.py        ← AlphaRuntime class
+│   ├── executor.py       ← ParallelExecutor
+│   ├── registry.py       ← AgentRegistry
+│   └── memory.py         ← StructuredMemory
+│
+├── agents/
+│   └── base.py           ← BaseAgent abstract class
+│
+├── llm/
+│   ├── base.py           ← LLMClient abstract base
+│   └── openrouter.py     ← OpenRouterClient (primary)
+│
+├── judge/
+│   └── judge.py          ← JudgeLayer (deterministic only)
+│
+├── aggregation/
+│   └── aggregator.py     ← Aggregator
+│
+├── schemas/              ← Shared Pydantic models (used by both layers)
+│   ├── signal.py         ← Signal model
+│   ├── hypothesis.py     ← Hypothesis model
+│   ├── incident.py       ← IncidentInput model
+│   ├── result.py         ← ExecutionResult, AgentResult
+│   └── events.py         ← AgentEvent (for display layer)
+│
+├── display/
+│   └── live.py           ← Rich live display (agent panels)
+│
+└── # ── SRE VERTICAL (imports from runtime, never the reverse) ─────
+│
+└── sre/
+    ├── agents/
+    │   ├── log_agent.py          ← LogAgent (claude-sonnet-4-6)
+    │   ├── metrics_agent.py      ← MetricsAgent (gemini-2.0-flash)
+    │   ├── commit_agent.py       ← CommitAgent (claude-sonnet-4-6)
+    │   ├── config_agent.py       ← ConfigAgent (gemini-2.0-flash)
+    │   └── synthesis_agent.py    ← SynthesisAgent (runs after aggregation)
+    │
+    ├── extractors/
+    │   └── signal_extractor.py   ← turns raw IncidentInput → Signal list
+    │
+    ├── integrations/
+    │   ├── sentry.py             ← live Sentry client
+    │   └── github.py             ← GitHub client (stub → live swap)
+    │
+    └── scenarios/
+        └── incident_b.py         ← demo payload for hackathon
 ```
+
+**Dependency rule:** Anything inside `alpha/sre/` may import from `alpha/core/`, `alpha/agents/`, `alpha/llm/`, `alpha/schemas/`, etc. Nothing outside `alpha/sre/` imports from it.
 
 Build in this order: schemas → LLMClient → base agent → memory → executor → judge → aggregator → runtime → display.
 
