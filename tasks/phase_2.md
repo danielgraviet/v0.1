@@ -172,13 +172,13 @@ The `rich` library renders a live multi-panel terminal layout — one panel per 
 ```
 ┌─ LogAgent ──────────────────────┐  ┌─ MetricsAgent ──────────────────┐
 │ [1.31s] ● analyzing errors...   │  │ [1.31s] ● analyzing latency...  │
-│ → sig_001 detected              │  │ → sig_002, sig_003 detected      │
-│ ✓ 2 hypotheses generated        │  │ ✓ 1 hypothesis generated         │
+│ → sig_001 detected              │  │ → sig_002, sig_003 detected     │
+│ ✓ 2 hypotheses generated        │  │ ✓ 1 hypothesis generated        │
 └─────────────────────────────────┘  └─────────────────────────────────┘
 ┌─ CommitAgent ───────────────────┐  ┌─ ConfigAgent ───────────────────┐
 │ [1.32s] ● analyzing diffs...    │  │ [1.32s] ● analyzing config...   │
-│ → sig_005, sig_006 detected     │  │ ✓ complete                       │
-│ ✓ 2 hypotheses generated        │  │                                  │
+│ → sig_005, sig_006 detected     │  │ ✓ complete                      │
+│ ✓ 2 hypotheses generated        │  │                                 │
 └─────────────────────────────────┘  └─────────────────────────────────┘
 ```
 
