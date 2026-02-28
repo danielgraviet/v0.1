@@ -1,14 +1,11 @@
 """Alpha SRE — CLI demo runner.
 
-Runs the full pipeline against a fixture incident and renders live agent
-panels in the terminal using Rich. Shows the ranked hypothesis table when
-all agents complete.
+Runs the full pipeline against the incident_b.json fixture and renders
+live agent panels in the terminal using Rich. Shows the ranked hypothesis
+table when all agents complete.
 
 Usage:
     uv run python cli.py
-
-Phase 4: swap the demo stub agents below for real SRE agents (LogAgent,
-MetricsAgent, CommitAgent) to run against live Sentry data.
 """
 
 import asyncio
@@ -18,111 +15,18 @@ import pathlib
 from rich.console import Console
 from rich.table import Table
 
-from agents.base import AgentContext, BaseAgent
 from core.runtime import AlphaRuntime
 from display.live import LiveDisplay
-from schemas.hypothesis import Hypothesis
+from llm.openrouter import OpenRouterClient
 from schemas.incident import IncidentInput
-from schemas.result import AgentResult
+from sre.agents.commit_agent import CommitAgent
+from sre.agents.config_agent import ConfigAgent
+from sre.agents.log_agent import LogAgent
+from sre.agents.metrics_agent import MetricsAgent
 
 console = Console()
 
 _FIXTURE = pathlib.Path(__file__).parent / "fixtures" / "incident_b.json"
-
-
-# ── Demo stub agents ──────────────────────────────────────────────────────────
-# Simulate the Phase 4 SRE agents with asyncio.sleep() so the live panels
-# are visually interesting. Each agent takes a different amount of time so
-# you can see them completing independently — proving parallel execution.
-#
-# Signal IDs (sig_001 … sig_012) come from the real SignalExtractor running
-# against incident_b.json. Agents cite the IDs the judge will actually find
-# in StructuredMemory.
-#
-# Phase 4: replace these classes with the real agents from sre/agents/.
-
-class LogAgent(BaseAgent):
-    name = "log_agent"
-
-    def __init__(self):
-        self.llm = None
-
-    async def run(self, context: AgentContext) -> AgentResult:
-        await asyncio.sleep(1.2)
-        return AgentResult(
-            agent_name=self.name,
-            hypotheses=[
-                Hypothesis(
-                    label="Error Rate Spike",
-                    description=(
-                        "Error rate 61% — 60x above baseline. "
-                        "Dominant pattern: GET /api/users timeouts. "
-                        "Consistent with DB connection exhaustion starving requests."
-                    ),
-                    confidence=0.85,
-                    severity="high",
-                    supporting_signals=["sig_001", "sig_002"],
-                    contributing_agent=self.name,
-                )
-            ],
-            execution_time_ms=1200.0,
-        )
-
-
-class MetricsAgent(BaseAgent):
-    name = "metrics_agent"
-
-    def __init__(self):
-        self.llm = None
-
-    async def run(self, context: AgentContext) -> AgentResult:
-        await asyncio.sleep(0.9)
-        return AgentResult(
-            agent_name=self.name,
-            hypotheses=[
-                Hypothesis(
-                    label="DB Connection Pool Exhaustion",
-                    description=(
-                        "Pool 100% saturated (5/5). p99 latency 40x above baseline. "
-                        "Cache hit rate collapsed from 82% to 8%. "
-                        "Requests queuing and timing out."
-                    ),
-                    confidence=0.91,
-                    severity="high",
-                    supporting_signals=["sig_004", "sig_005", "sig_006"],
-                    contributing_agent=self.name,
-                )
-            ],
-            execution_time_ms=900.0,
-        )
-
-
-class CommitAgent(BaseAgent):
-    name = "commit_agent"
-
-    def __init__(self):
-        self.llm = None
-
-    async def run(self, context: AgentContext) -> AgentResult:
-        await asyncio.sleep(1.5)
-        return AgentResult(
-            agent_name=self.name,
-            hypotheses=[
-                Hypothesis(
-                    label="DB Connection Pool Exhaustion",
-                    description=(
-                        "Commit e4f5g6h reduced MAX_DB_CONNECTIONS from 20 to 5. "
-                        "Commit a1b2c3d removed @cache decorator and added an unindexed JOIN. "
-                        "Combined: cache miss cascade overwhelmed a pool already at 25% capacity."
-                    ),
-                    confidence=0.88,
-                    severity="high",
-                    supporting_signals=["sig_007", "sig_008", "sig_009"],
-                    contributing_agent=self.name,
-                )
-            ],
-            execution_time_ms=1500.0,
-        )
 
 
 # ── Results table ─────────────────────────────────────────────────────────────
@@ -171,9 +75,10 @@ async def _run() -> None:
         incident = IncidentInput(**json.load(f))
 
     runtime = AlphaRuntime()
-    runtime.register(LogAgent())
-    runtime.register(MetricsAgent())
-    runtime.register(CommitAgent())
+    runtime.register(LogAgent(llm=OpenRouterClient("anthropic/claude-sonnet-4-6")))
+    runtime.register(MetricsAgent(llm=OpenRouterClient("google/gemini-2.0-flash-001")))
+    runtime.register(CommitAgent(llm=OpenRouterClient("anthropic/claude-sonnet-4-6")))
+    runtime.register(ConfigAgent(llm=OpenRouterClient("google/gemini-2.0-flash-001")))
 
     agent_names = [a.name for a in runtime._registry.get_all()]
     display = LiveDisplay(agent_names)
@@ -193,7 +98,7 @@ async def _run() -> None:
         )
 
         result = await pipeline
-        await event_queue.put(None)   # sentinel: tell consumer to stop
+        await event_queue.put(None)
         await consumer
 
     _print_results(result)
