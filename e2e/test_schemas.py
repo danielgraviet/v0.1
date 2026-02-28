@@ -12,7 +12,7 @@ from pydantic import ValidationError
 from schemas.events import AgentEvent, EventType
 from schemas.hypothesis import Hypothesis
 from schemas.incident import IncidentInput
-from schemas.result import AgentResult, ExecutionResult
+from schemas.result import AgentResult, ExecutionResult, SynthesisResult
 from schemas.signal import Signal
 
 
@@ -169,6 +169,38 @@ class TestExecutionResult:
     def test_requires_human_review_flag(self):
         result = ExecutionResult(ranked_hypotheses=[], signals_used=[], requires_human_review=True)
         assert result.requires_human_review is True
+
+    def test_synthesis_field_accepts_schema(self):
+        result = ExecutionResult(
+            ranked_hypotheses=[],
+            signals_used=[],
+            synthesis=SynthesisResult(
+                summary="Investigation summary.",
+                key_finding="Top finding.",
+                confidence_in_ranking=0.75,
+            ),
+            requires_human_review=False,
+        )
+        assert result.synthesis is not None
+        assert result.synthesis.confidence_in_ranking == 0.75
+
+
+class TestSynthesisResult:
+    def test_valid_synthesis_result(self):
+        synthesis = SynthesisResult(
+            summary="Two-sentence summary.",
+            key_finding="Most likely root cause.",
+            confidence_in_ranking=0.91,
+        )
+        assert synthesis.key_finding == "Most likely root cause."
+
+    def test_confidence_above_one_raises(self):
+        with pytest.raises(ValidationError):
+            SynthesisResult(
+                summary="Summary.",
+                key_finding="Finding.",
+                confidence_in_ranking=1.1,
+            )
 
 
 # ── AgentEvent ────────────────────────────────────────────────────────────────

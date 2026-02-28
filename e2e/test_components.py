@@ -455,3 +455,33 @@ class TestAlphaRuntime:
         assert len(result.signals_used) == 2
         signal_ids = {s.id for s in result.signals_used}
         assert signal_ids == {"sig_001", "sig_002"}
+
+    async def test_runtime_produces_fallback_synthesis(self):
+        runtime = AlphaRuntime()
+        result = await runtime.execute(make_incident())
+        assert result.synthesis is not None
+        assert result.synthesis.confidence_in_ranking == 0.0
+
+    async def test_runtime_synthesis_confidence_tracks_top_hypothesis(self):
+        class HighConfAgent(BaseAgent):
+            name = "high_conf_agent"
+
+            async def run(self, context: AgentContext) -> AgentResult:
+                return AgentResult(
+                    agent_name=self.name,
+                    hypotheses=[Hypothesis(
+                        label="Clear Root Cause",
+                        description="High confidence finding",
+                        confidence=0.9,
+                        severity="high",
+                        supporting_signals=["sig_001"],
+                        contributing_agent=self.name,
+                    )],
+                    execution_time_ms=0.0,
+                )
+
+        runtime = SeededRuntime()
+        runtime.register(HighConfAgent(StubLLM()))
+        result = await runtime.execute(make_incident())
+        assert result.synthesis is not None
+        assert result.synthesis.confidence_in_ranking == pytest.approx(0.9)
