@@ -36,40 +36,7 @@
           class="json-editor"
           spellcheck="false"
           placeholder="Paste incident JSON here…"
-        >{
-  "deployment_id": "deploy-20260228-001",
-  "logs": [
-    "[ERROR] DB query timeout after 5000ms",
-    "[ERROR] DB query timeout after 5000ms",
-    "[ERROR] Connection pool exhausted",
-    "[WARN]  Cache miss rate 94% (was 12%)"
-  ],
-  "metrics": {
-    "p99_latency_ms": 4800,
-    "p50_latency_ms": 1200,
-    "db_query_time_ms": 3900,
-    "cache_hit_rate": 0.06,
-    "connection_pool_active": 98,
-    "connection_pool_max": 100
-  },
-  "recent_commits": [
-    {
-      "sha": "a3f8c12",
-      "message": "refactor: simplify user query",
-      "files_changed": ["db/queries.py"]
-    },
-    {
-      "sha": "b19e044",
-      "message": "perf: remove redundant cache layer",
-      "files_changed": ["services/cache.py"]
-    }
-  ],
-  "config_snapshot": {
-    "db_pool_size": 10,
-    "cache_ttl_seconds": 0,
-    "feature_flags": { "new_query_planner": true }
-  }
-}</textarea>
+        ></textarea>
         <button id="analyze-btn" class="btn btn--primary" onclick="AlphaSRE.analyze()">
           ANALYZE →
         </button>
@@ -118,27 +85,6 @@
             <div class="agent-detail">—</div>
           </div>
 
-          <div class="agent-card agent-card--wide" id="agent-synthesis">
-            <div class="agent-name">SynthesisAgent</div>
-            <div class="agent-status">
-              <span class="badge badge--pending">PENDING</span>
-            </div>
-            <div class="agent-detail">Waits for all agents to complete</div>
-          </div>
-
-        </div>
-      </div>
-    </section>
-
-    <!-- Panel: Extracted Signals -->
-    <section class="panel" id="panel-signals">
-      <div class="panel-header">
-        <span class="panel-label">EXTRACTED SIGNALS</span>
-        <span id="signals-count" class="panel-meta">0</span>
-      </div>
-      <div class="panel-body">
-        <div id="signals-list">
-          <div class="empty-state">Run analysis to extract signals.</div>
         </div>
       </div>
     </section>
@@ -153,11 +99,7 @@
         <div id="hypotheses-list">
           <div class="empty-state">Run analysis to see ranked hypotheses.</div>
         </div>
-        <div id="approval-gate" class="approval-gate hidden">
-          <span class="approval-label">⚠  REQUIRES HUMAN REVIEW</span>
-          <button class="btn btn--approve" onclick="AlphaSRE.approve()">APPROVE</button>
-          <button class="btn btn--reject" onclick="AlphaSRE.reject()">REJECT</button>
-        </div>
+        <div id="review-flag" class="hidden"></div>
       </div>
     </section>
 
@@ -166,6 +108,7 @@
   <!-- ─── Footer ──────────────────────────────────────────────────────── -->
   <footer id="footer">
     <span>Alpha SRE — no autonomous actions. All changes require human approval.</span>
+    <span id="execution-id" class="hidden"></span>
   </footer>
 
   <script src="/static/app.js"></script>

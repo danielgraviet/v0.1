@@ -60,7 +60,7 @@ make verify     # compile check + tests
 
 **Tooling commands (what they do)**
 - `make setup`: runs `uv sync --dev` to install app + dev dependencies into `.venv` (preferred onboarding path).
-- `make serve`: starts the FastAPI dashboard server with hot reload at `http://127.0.0.1:8000`.
+- `make serve`: starts the unified API + dashboard server with hot reload at `http://127.0.0.1:8000`. Serves both the webhook/results API and the web frontend from `main.py`.
 - `make run`: runs `main.py` using the project virtualenv.
 - `make test`: runs deterministic/offline pytest only (`-m "not live"`), so it works in CI and no-network environments.
 - `make test-live`: runs only live API tests (`-m "live"`), intended for explicit OpenRouter connectivity checks.
@@ -177,7 +177,8 @@ This updates both `pyproject.toml` and `uv.lock`. Commit both files.
 │       ├── style.css     # Engineering-first dark theme
 │       └── app.js        # Agent status, signals, and hypothesis rendering
 │
-├── server.py             # FastAPI server — run with `make serve`
+├── main.py               # Unified FastAPI server — run with `make serve`
+├── server.py             # Legacy dashboard server (superseded by main.py)
 ├── pyproject.toml        # Project metadata and direct dependencies
 ├── uv.lock               # Pinned dependency tree — always commit this
 ├── .env.example          # Required variable names with placeholders — commit this

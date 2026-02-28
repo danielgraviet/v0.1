@@ -1,0 +1,566 @@
+2026-02-28 16:09:36  INFO      httpx  HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-02-28 16:09:36  INFO      core.runtime  Starting execution for deployment 'test-deploy-001' with 4 registered agents.
+2026-02-28 16:09:37  INFO      core.runtime  4/4 agents returned results.
+2026-02-28 16:09:37  INFO      core.runtime  4/4 results passed judge validation.
+2026-02-28 16:09:37  INFO      core.runtime  Aggregation complete. 4 ranked hypotheses.
+2026-02-28 16:09:37  INFO      httpx  HTTP Request: POST http://testserver/api/analyze "HTTP/1.1 200 OK"
+2026-02-28 16:09:37  INFO      core.runtime  Starting execution for deployment 'test-deploy-001' with 4 registered agents.
+2026-02-28 16:09:38  INFO      core.runtime  4/4 agents returned results.
+2026-02-28 16:09:38  INFO      core.runtime  4/4 results passed judge validation.
+2026-02-28 16:09:38  INFO      core.runtime  Aggregation complete. 4 ranked hypotheses.
+2026-02-28 16:09:38  INFO      httpx  HTTP Request: POST http://testserver/api/analyze "HTTP/1.1 200 OK"
+2026-02-28 16:09:38  INFO      httpx  HTTP Request: GET http://testserver/executions/latest "HTTP/1.1 200 OK"
+2026-02-28 16:09:38  INFO      httpx  HTTP Request: GET http://testserver/api/github/enrichment "HTTP/1.1 200 OK"
+2026-02-28 16:09:38  INFO      httpx  HTTP Request: POST http://testserver/api/analyze "HTTP/1.1 400 Bad Request"
+2026-02-28 16:09:38  INFO      httpx  HTTP Request: GET http://testserver/health "HTTP/1.1 200 OK"
+2026-02-28 16:09:38  ERROR     core.executor  Agent 'crash_agent' raised after 0ms — skipping. Error: agent failed
+2026-02-28 16:09:39  ERROR     core.executor  Agent 'slow_agent' timed out after 1.0s (limit: 1s) — skipping.
+2026-02-28 16:09:39  INFO      core.runtime  Starting execution for deployment 'test-001' with 0 registered agents.
+2026-02-28 16:09:39  INFO      core.runtime  0/0 agents returned results.
+2026-02-28 16:09:39  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:09:39  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:09:39  INFO      core.runtime  Starting execution for deployment 'test-001' with 0 registered agents.
+2026-02-28 16:09:39  INFO      core.runtime  0/0 agents returned results.
+2026-02-28 16:09:39  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:09:39  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:09:39  INFO      core.runtime  Starting execution for deployment 'test-001' with 0 registered agents.
+2026-02-28 16:09:39  INFO      core.runtime  0/0 agents returned results.
+2026-02-28 16:09:39  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:09:39  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:09:39  INFO      core.runtime  Starting execution for deployment 'test-001' with 0 registered agents.
+2026-02-28 16:09:39  INFO      core.runtime  0/0 agents returned results.
+2026-02-28 16:09:39  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:09:39  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:09:39  INFO      core.runtime  Starting execution for deployment 'test-001' with 0 registered agents.
+2026-02-28 16:09:39  INFO      core.runtime  0/0 agents returned results.
+2026-02-28 16:09:39  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:09:39  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:09:39  INFO      core.runtime  Starting execution for deployment 'test-001' with 1 registered agents.
+2026-02-28 16:09:39  ERROR     core.executor  Agent 'crash_agent' raised after 0ms — skipping. Error: agent failed
+2026-02-28 16:09:39  INFO      core.runtime  0/1 agents returned results.
+2026-02-28 16:09:39  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:09:39  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:09:39  INFO      core.runtime  Starting execution for deployment 'test-001' with 1 registered agents.
+2026-02-28 16:09:39  INFO      core.runtime  1/1 agents returned results.
+2026-02-28 16:09:39  WARNING   core.runtime  Agent 'hallucinating_agent' result rejected: Hypothesis 'Ghost hypothesis' from agent 'hallucinating_agent' cites unknown signal ID 'sig_999'. Valid IDs: []
+2026-02-28 16:09:39  INFO      core.runtime  0/1 results passed judge validation.
+2026-02-28 16:09:39  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:09:39  INFO      core.runtime  Starting execution for deployment 'test-001' with 2 registered agents.
+2026-02-28 16:09:39  INFO      core.runtime  2/2 agents returned results.
+2026-02-28 16:09:39  INFO      core.runtime  2/2 results passed judge validation.
+2026-02-28 16:09:39  INFO      core.runtime  Aggregation complete. 2 ranked hypotheses.
+2026-02-28 16:09:39  INFO      core.runtime  Starting execution for deployment 'test-001' with 1 registered agents.
+2026-02-28 16:09:39  INFO      core.runtime  1/1 agents returned results.
+2026-02-28 16:09:39  INFO      core.runtime  1/1 results passed judge validation.
+2026-02-28 16:09:39  INFO      core.runtime  Aggregation complete. 1 ranked hypotheses.
+2026-02-28 16:09:39  INFO      core.runtime  Starting execution for deployment 'test-001' with 0 registered agents.
+2026-02-28 16:09:39  INFO      core.runtime  0/0 agents returned results.
+2026-02-28 16:09:39  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:09:39  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:09:39  ERROR     signals.signal_extractor  Analyzer LogAnalyzer failed — skipping. Error: boom
+2026-02-28 16:10:07  INFO      httpx  HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-02-28 16:10:07  INFO      core.runtime  Starting execution for deployment 'test-deploy-001' with 4 registered agents.
+2026-02-28 16:10:08  INFO      core.runtime  4/4 agents returned results.
+2026-02-28 16:10:08  INFO      core.runtime  4/4 results passed judge validation.
+2026-02-28 16:10:08  INFO      core.runtime  Aggregation complete. 4 ranked hypotheses.
+2026-02-28 16:10:08  INFO      httpx  HTTP Request: POST http://testserver/api/analyze "HTTP/1.1 200 OK"
+2026-02-28 16:10:08  INFO      core.runtime  Starting execution for deployment 'test-deploy-001' with 4 registered agents.
+2026-02-28 16:10:09  INFO      core.runtime  4/4 agents returned results.
+2026-02-28 16:10:09  INFO      core.runtime  4/4 results passed judge validation.
+2026-02-28 16:10:09  INFO      core.runtime  Aggregation complete. 4 ranked hypotheses.
+2026-02-28 16:10:09  INFO      httpx  HTTP Request: POST http://testserver/api/analyze "HTTP/1.1 200 OK"
+2026-02-28 16:10:09  INFO      httpx  HTTP Request: GET http://testserver/executions/latest "HTTP/1.1 200 OK"
+2026-02-28 16:10:09  INFO      httpx  HTTP Request: GET http://testserver/api/github/enrichment "HTTP/1.1 200 OK"
+2026-02-28 16:10:09  INFO      httpx  HTTP Request: POST http://testserver/api/analyze "HTTP/1.1 400 Bad Request"
+2026-02-28 16:10:09  INFO      httpx  HTTP Request: GET http://testserver/health "HTTP/1.1 200 OK"
+2026-02-28 16:16:05  INFO      httpx  HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-02-28 16:16:05  INFO      core.runtime  Starting execution for deployment 'test-deploy-001' with 4 registered agents.
+2026-02-28 16:16:06  INFO      core.runtime  4/4 agents returned results.
+2026-02-28 16:16:06  INFO      core.runtime  4/4 results passed judge validation.
+2026-02-28 16:16:06  INFO      core.runtime  Aggregation complete. 4 ranked hypotheses.
+2026-02-28 16:16:06  INFO      httpx  HTTP Request: POST http://testserver/api/analyze "HTTP/1.1 200 OK"
+2026-02-28 16:16:06  INFO      core.runtime  Starting execution for deployment 'test-deploy-001' with 4 registered agents.
+2026-02-28 16:16:07  INFO      core.runtime  4/4 agents returned results.
+2026-02-28 16:16:07  INFO      core.runtime  4/4 results passed judge validation.
+2026-02-28 16:16:07  INFO      core.runtime  Aggregation complete. 4 ranked hypotheses.
+2026-02-28 16:16:07  INFO      httpx  HTTP Request: POST http://testserver/api/analyze "HTTP/1.1 200 OK"
+2026-02-28 16:16:07  INFO      httpx  HTTP Request: GET http://testserver/executions/latest "HTTP/1.1 200 OK"
+2026-02-28 16:16:07  INFO      httpx  HTTP Request: POST http://testserver/api/analyze "HTTP/1.1 400 Bad Request"
+2026-02-28 16:16:07  INFO      httpx  HTTP Request: GET http://testserver/health "HTTP/1.1 200 OK"
+2026-02-28 16:16:07  ERROR     core.executor  Agent 'crash_agent' raised after 0ms — skipping. Error: agent failed
+2026-02-28 16:16:08  ERROR     core.executor  Agent 'slow_agent' timed out after 1.0s (limit: 1s) — skipping.
+2026-02-28 16:16:08  INFO      core.runtime  Starting execution for deployment 'test-001' with 0 registered agents.
+2026-02-28 16:16:08  INFO      core.runtime  0/0 agents returned results.
+2026-02-28 16:16:08  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:16:08  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:16:08  INFO      core.runtime  Starting execution for deployment 'test-001' with 0 registered agents.
+2026-02-28 16:16:08  INFO      core.runtime  0/0 agents returned results.
+2026-02-28 16:16:08  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:16:08  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:16:08  INFO      core.runtime  Starting execution for deployment 'test-001' with 0 registered agents.
+2026-02-28 16:16:08  INFO      core.runtime  0/0 agents returned results.
+2026-02-28 16:16:08  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:16:08  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:16:08  INFO      core.runtime  Starting execution for deployment 'test-001' with 0 registered agents.
+2026-02-28 16:16:08  INFO      core.runtime  0/0 agents returned results.
+2026-02-28 16:16:08  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:16:08  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:16:08  INFO      core.runtime  Starting execution for deployment 'test-001' with 0 registered agents.
+2026-02-28 16:16:08  INFO      core.runtime  0/0 agents returned results.
+2026-02-28 16:16:08  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:16:08  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:16:08  INFO      core.runtime  Starting execution for deployment 'test-001' with 1 registered agents.
+2026-02-28 16:16:08  ERROR     core.executor  Agent 'crash_agent' raised after 0ms — skipping. Error: agent failed
+2026-02-28 16:16:08  INFO      core.runtime  0/1 agents returned results.
+2026-02-28 16:16:08  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:16:08  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:16:08  INFO      core.runtime  Starting execution for deployment 'test-001' with 1 registered agents.
+2026-02-28 16:16:08  INFO      core.runtime  1/1 agents returned results.
+2026-02-28 16:16:08  WARNING   core.runtime  Agent 'hallucinating_agent' result rejected: Hypothesis 'Ghost hypothesis' from agent 'hallucinating_agent' cites unknown signal ID 'sig_999'. Valid IDs: []
+2026-02-28 16:16:08  INFO      core.runtime  0/1 results passed judge validation.
+2026-02-28 16:16:08  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:16:08  INFO      core.runtime  Starting execution for deployment 'test-001' with 2 registered agents.
+2026-02-28 16:16:08  INFO      core.runtime  2/2 agents returned results.
+2026-02-28 16:16:08  INFO      core.runtime  2/2 results passed judge validation.
+2026-02-28 16:16:08  INFO      core.runtime  Aggregation complete. 2 ranked hypotheses.
+2026-02-28 16:16:08  INFO      core.runtime  Starting execution for deployment 'test-001' with 1 registered agents.
+2026-02-28 16:16:08  INFO      core.runtime  1/1 agents returned results.
+2026-02-28 16:16:08  INFO      core.runtime  1/1 results passed judge validation.
+2026-02-28 16:16:08  INFO      core.runtime  Aggregation complete. 1 ranked hypotheses.
+2026-02-28 16:16:08  INFO      core.runtime  Starting execution for deployment 'test-001' with 0 registered agents.
+2026-02-28 16:16:08  INFO      core.runtime  0/0 agents returned results.
+2026-02-28 16:16:08  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:16:08  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:16:08  ERROR     signals.signal_extractor  Analyzer LogAnalyzer failed — skipping. Error: boom
+2026-02-28 16:18:38  INFO      httpx  HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-02-28 16:18:38  INFO      core.runtime  Starting execution for deployment 'test-deploy-001' with 0 registered agents.
+2026-02-28 16:18:38  INFO      core.runtime  0/0 agents returned results.
+2026-02-28 16:18:38  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:18:38  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:18:38  INFO      httpx  HTTP Request: POST http://testserver/api/analyze "HTTP/1.1 200 OK"
+2026-02-28 16:18:38  INFO      core.runtime  Starting execution for deployment 'test-deploy-001' with 0 registered agents.
+2026-02-28 16:18:38  INFO      core.runtime  0/0 agents returned results.
+2026-02-28 16:18:38  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:18:38  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:18:38  INFO      httpx  HTTP Request: POST http://testserver/api/analyze "HTTP/1.1 200 OK"
+2026-02-28 16:18:38  INFO      httpx  HTTP Request: GET http://testserver/executions/latest "HTTP/1.1 200 OK"
+2026-02-28 16:18:38  INFO      httpx  HTTP Request: POST http://testserver/api/analyze "HTTP/1.1 400 Bad Request"
+2026-02-28 16:18:38  INFO      httpx  HTTP Request: GET http://testserver/health "HTTP/1.1 200 OK"
+2026-02-28 16:18:38  ERROR     core.executor  Agent 'crash_agent' raised after 0ms — skipping. Error: agent failed
+2026-02-28 16:18:39  ERROR     core.executor  Agent 'slow_agent' timed out after 1.0s (limit: 1s) — skipping.
+2026-02-28 16:18:39  INFO      core.runtime  Starting execution for deployment 'test-001' with 0 registered agents.
+2026-02-28 16:18:39  INFO      core.runtime  0/0 agents returned results.
+2026-02-28 16:18:39  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:18:39  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:18:39  INFO      core.runtime  Starting execution for deployment 'test-001' with 0 registered agents.
+2026-02-28 16:18:39  INFO      core.runtime  0/0 agents returned results.
+2026-02-28 16:18:39  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:18:39  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:18:39  INFO      core.runtime  Starting execution for deployment 'test-001' with 0 registered agents.
+2026-02-28 16:18:39  INFO      core.runtime  0/0 agents returned results.
+2026-02-28 16:18:39  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:18:39  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:18:39  INFO      core.runtime  Starting execution for deployment 'test-001' with 0 registered agents.
+2026-02-28 16:18:39  INFO      core.runtime  0/0 agents returned results.
+2026-02-28 16:18:39  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:18:39  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:18:39  INFO      core.runtime  Starting execution for deployment 'test-001' with 0 registered agents.
+2026-02-28 16:18:39  INFO      core.runtime  0/0 agents returned results.
+2026-02-28 16:18:39  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:18:39  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:18:39  INFO      core.runtime  Starting execution for deployment 'test-001' with 1 registered agents.
+2026-02-28 16:18:39  ERROR     core.executor  Agent 'crash_agent' raised after 0ms — skipping. Error: agent failed
+2026-02-28 16:18:39  INFO      core.runtime  0/1 agents returned results.
+2026-02-28 16:18:39  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:18:39  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:18:39  INFO      core.runtime  Starting execution for deployment 'test-001' with 1 registered agents.
+2026-02-28 16:18:39  INFO      core.runtime  1/1 agents returned results.
+2026-02-28 16:18:39  WARNING   core.runtime  Agent 'hallucinating_agent' result rejected: Hypothesis 'Ghost hypothesis' from agent 'hallucinating_agent' cites unknown signal ID 'sig_999'. Valid IDs: []
+2026-02-28 16:18:39  INFO      core.runtime  0/1 results passed judge validation.
+2026-02-28 16:18:39  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:18:39  INFO      core.runtime  Starting execution for deployment 'test-001' with 2 registered agents.
+2026-02-28 16:18:39  INFO      core.runtime  2/2 agents returned results.
+2026-02-28 16:18:39  INFO      core.runtime  2/2 results passed judge validation.
+2026-02-28 16:18:39  INFO      core.runtime  Aggregation complete. 2 ranked hypotheses.
+2026-02-28 16:18:39  INFO      core.runtime  Starting execution for deployment 'test-001' with 1 registered agents.
+2026-02-28 16:18:39  INFO      core.runtime  1/1 agents returned results.
+2026-02-28 16:18:39  INFO      core.runtime  1/1 results passed judge validation.
+2026-02-28 16:18:39  INFO      core.runtime  Aggregation complete. 1 ranked hypotheses.
+2026-02-28 16:18:39  INFO      core.runtime  Starting execution for deployment 'test-001' with 0 registered agents.
+2026-02-28 16:18:39  INFO      core.runtime  0/0 agents returned results.
+2026-02-28 16:18:39  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:18:39  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:18:39  ERROR     signals.signal_extractor  Analyzer LogAnalyzer failed — skipping. Error: boom
+2026-02-28 16:20:34  INFO      httpx  HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-02-28 16:20:34  INFO      core.runtime  Starting execution for deployment 'test-deploy-001' with 4 registered agents.
+2026-02-28 16:20:35  INFO      core.runtime  4/4 agents returned results.
+2026-02-28 16:20:35  INFO      core.runtime  4/4 results passed judge validation.
+2026-02-28 16:20:35  INFO      core.runtime  Aggregation complete. 4 ranked hypotheses.
+2026-02-28 16:20:35  INFO      httpx  HTTP Request: POST http://testserver/api/analyze "HTTP/1.1 200 OK"
+2026-02-28 16:20:35  INFO      core.runtime  Starting execution for deployment 'test-deploy-001' with 4 registered agents.
+2026-02-28 16:20:36  INFO      core.runtime  4/4 agents returned results.
+2026-02-28 16:20:36  INFO      core.runtime  4/4 results passed judge validation.
+2026-02-28 16:20:36  INFO      core.runtime  Aggregation complete. 4 ranked hypotheses.
+2026-02-28 16:20:36  INFO      httpx  HTTP Request: POST http://testserver/api/analyze "HTTP/1.1 200 OK"
+2026-02-28 16:20:36  INFO      httpx  HTTP Request: GET http://testserver/executions/latest "HTTP/1.1 200 OK"
+2026-02-28 16:20:36  INFO      httpx  HTTP Request: POST http://testserver/api/analyze "HTTP/1.1 400 Bad Request"
+2026-02-28 16:20:36  INFO      httpx  HTTP Request: GET http://testserver/health "HTTP/1.1 200 OK"
+2026-02-28 16:20:36  ERROR     core.executor  Agent 'crash_agent' raised after 0ms — skipping. Error: agent failed
+2026-02-28 16:20:37  ERROR     core.executor  Agent 'slow_agent' timed out after 1.0s (limit: 1s) — skipping.
+2026-02-28 16:20:37  INFO      core.runtime  Starting execution for deployment 'test-001' with 0 registered agents.
+2026-02-28 16:20:37  INFO      core.runtime  0/0 agents returned results.
+2026-02-28 16:20:37  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:20:37  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:20:37  INFO      core.runtime  Starting execution for deployment 'test-001' with 0 registered agents.
+2026-02-28 16:20:37  INFO      core.runtime  0/0 agents returned results.
+2026-02-28 16:20:37  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:20:37  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:20:37  INFO      core.runtime  Starting execution for deployment 'test-001' with 0 registered agents.
+2026-02-28 16:20:37  INFO      core.runtime  0/0 agents returned results.
+2026-02-28 16:20:37  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:20:37  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:20:37  INFO      core.runtime  Starting execution for deployment 'test-001' with 0 registered agents.
+2026-02-28 16:20:37  INFO      core.runtime  0/0 agents returned results.
+2026-02-28 16:20:37  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:20:37  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:20:37  INFO      core.runtime  Starting execution for deployment 'test-001' with 0 registered agents.
+2026-02-28 16:20:37  INFO      core.runtime  0/0 agents returned results.
+2026-02-28 16:20:37  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:20:37  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:20:37  INFO      core.runtime  Starting execution for deployment 'test-001' with 1 registered agents.
+2026-02-28 16:20:37  ERROR     core.executor  Agent 'crash_agent' raised after 0ms — skipping. Error: agent failed
+2026-02-28 16:20:37  INFO      core.runtime  0/1 agents returned results.
+2026-02-28 16:20:37  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:20:37  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:20:37  INFO      core.runtime  Starting execution for deployment 'test-001' with 1 registered agents.
+2026-02-28 16:20:37  INFO      core.runtime  1/1 agents returned results.
+2026-02-28 16:20:37  WARNING   core.runtime  Agent 'hallucinating_agent' result rejected: Hypothesis 'Ghost hypothesis' from agent 'hallucinating_agent' cites unknown signal ID 'sig_999'. Valid IDs: []
+2026-02-28 16:20:37  INFO      core.runtime  0/1 results passed judge validation.
+2026-02-28 16:20:37  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:20:37  INFO      core.runtime  Starting execution for deployment 'test-001' with 2 registered agents.
+2026-02-28 16:20:37  INFO      core.runtime  2/2 agents returned results.
+2026-02-28 16:20:37  INFO      core.runtime  2/2 results passed judge validation.
+2026-02-28 16:20:37  INFO      core.runtime  Aggregation complete. 2 ranked hypotheses.
+2026-02-28 16:20:37  INFO      core.runtime  Starting execution for deployment 'test-001' with 1 registered agents.
+2026-02-28 16:20:37  INFO      core.runtime  1/1 agents returned results.
+2026-02-28 16:20:37  INFO      core.runtime  1/1 results passed judge validation.
+2026-02-28 16:20:37  INFO      core.runtime  Aggregation complete. 1 ranked hypotheses.
+2026-02-28 16:20:37  INFO      core.runtime  Starting execution for deployment 'test-001' with 0 registered agents.
+2026-02-28 16:20:37  INFO      core.runtime  0/0 agents returned results.
+2026-02-28 16:20:37  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:20:37  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:20:37  ERROR     signals.signal_extractor  Analyzer LogAnalyzer failed — skipping. Error: boom
+2026-02-28 16:22:08  INFO      core.runtime  Starting execution for deployment 'deploy-20260228-001' with 4 registered agents.
+2026-02-28 16:22:09  INFO      core.runtime  4/4 agents returned results.
+2026-02-28 16:22:09  INFO      core.runtime  4/4 results passed judge validation.
+2026-02-28 16:22:09  INFO      core.runtime  Aggregation complete. 4 ranked hypotheses.
+2026-02-28 16:23:32  INFO      core.runtime  Starting execution for deployment 'deploy-20260228-001' with 4 registered agents.
+2026-02-28 16:23:33  INFO      core.runtime  4/4 agents returned results.
+2026-02-28 16:23:33  INFO      core.runtime  4/4 results passed judge validation.
+2026-02-28 16:23:33  INFO      core.runtime  Aggregation complete. 4 ranked hypotheses.
+2026-02-28 16:28:26  INFO      httpx  HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-02-28 16:28:26  INFO      core.runtime  Starting execution for deployment 'test-deploy-001' with 4 registered agents.
+2026-02-28 16:28:27  INFO      core.runtime  4/4 agents returned results.
+2026-02-28 16:28:27  INFO      core.runtime  4/4 results passed judge validation.
+2026-02-28 16:28:27  INFO      core.runtime  Aggregation complete. 4 ranked hypotheses.
+2026-02-28 16:28:27  INFO      httpx  HTTP Request: POST http://testserver/api/analyze "HTTP/1.1 200 OK"
+2026-02-28 16:28:27  INFO      core.runtime  Starting execution for deployment 'test-deploy-001' with 4 registered agents.
+2026-02-28 16:28:28  INFO      core.runtime  4/4 agents returned results.
+2026-02-28 16:28:28  INFO      core.runtime  4/4 results passed judge validation.
+2026-02-28 16:28:28  INFO      core.runtime  Aggregation complete. 4 ranked hypotheses.
+2026-02-28 16:28:28  INFO      httpx  HTTP Request: POST http://testserver/api/analyze "HTTP/1.1 200 OK"
+2026-02-28 16:28:28  INFO      httpx  HTTP Request: GET http://testserver/executions/latest "HTTP/1.1 200 OK"
+2026-02-28 16:28:28  INFO      httpx  HTTP Request: POST http://testserver/api/analyze "HTTP/1.1 400 Bad Request"
+2026-02-28 16:28:28  INFO      httpx  HTTP Request: GET http://testserver/health "HTTP/1.1 200 OK"
+2026-02-28 16:28:28  ERROR     core.executor  Agent 'crash_agent' raised after 0ms — skipping. Error: agent failed
+2026-02-28 16:28:29  ERROR     core.executor  Agent 'slow_agent' timed out after 1.0s (limit: 1s) — skipping.
+2026-02-28 16:28:29  INFO      core.runtime  Starting execution for deployment 'test-001' with 0 registered agents.
+2026-02-28 16:28:29  INFO      core.runtime  0/0 agents returned results.
+2026-02-28 16:28:29  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:28:29  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:28:29  INFO      core.runtime  Starting execution for deployment 'test-001' with 0 registered agents.
+2026-02-28 16:28:29  INFO      core.runtime  0/0 agents returned results.
+2026-02-28 16:28:29  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:28:29  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:28:29  INFO      core.runtime  Starting execution for deployment 'test-001' with 0 registered agents.
+2026-02-28 16:28:29  INFO      core.runtime  0/0 agents returned results.
+2026-02-28 16:28:29  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:28:29  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:28:29  INFO      core.runtime  Starting execution for deployment 'test-001' with 0 registered agents.
+2026-02-28 16:28:29  INFO      core.runtime  0/0 agents returned results.
+2026-02-28 16:28:29  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:28:29  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:28:29  INFO      core.runtime  Starting execution for deployment 'test-001' with 0 registered agents.
+2026-02-28 16:28:29  INFO      core.runtime  0/0 agents returned results.
+2026-02-28 16:28:29  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:28:29  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:28:29  INFO      core.runtime  Starting execution for deployment 'test-001' with 1 registered agents.
+2026-02-28 16:28:29  ERROR     core.executor  Agent 'crash_agent' raised after 0ms — skipping. Error: agent failed
+2026-02-28 16:28:29  INFO      core.runtime  0/1 agents returned results.
+2026-02-28 16:28:29  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:28:29  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:28:29  INFO      core.runtime  Starting execution for deployment 'test-001' with 1 registered agents.
+2026-02-28 16:28:29  INFO      core.runtime  1/1 agents returned results.
+2026-02-28 16:28:29  WARNING   core.runtime  Agent 'hallucinating_agent' result rejected: Hypothesis 'Ghost hypothesis' from agent 'hallucinating_agent' cites unknown signal ID 'sig_999'. Valid IDs: []
+2026-02-28 16:28:29  INFO      core.runtime  0/1 results passed judge validation.
+2026-02-28 16:28:29  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:28:29  INFO      core.runtime  Starting execution for deployment 'test-001' with 2 registered agents.
+2026-02-28 16:28:29  INFO      core.runtime  2/2 agents returned results.
+2026-02-28 16:28:29  INFO      core.runtime  2/2 results passed judge validation.
+2026-02-28 16:28:29  INFO      core.runtime  Aggregation complete. 2 ranked hypotheses.
+2026-02-28 16:28:29  INFO      core.runtime  Starting execution for deployment 'test-001' with 1 registered agents.
+2026-02-28 16:28:29  INFO      core.runtime  1/1 agents returned results.
+2026-02-28 16:28:29  INFO      core.runtime  1/1 results passed judge validation.
+2026-02-28 16:28:29  INFO      core.runtime  Aggregation complete. 1 ranked hypotheses.
+2026-02-28 16:28:29  INFO      core.runtime  Starting execution for deployment 'test-001' with 0 registered agents.
+2026-02-28 16:28:29  INFO      core.runtime  0/0 agents returned results.
+2026-02-28 16:28:29  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:28:29  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:28:29  ERROR     signals.signal_extractor  Analyzer LogAnalyzer failed — skipping. Error: boom
+2026-02-28 16:30:01  INFO      httpx  HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-02-28 16:30:01  INFO      core.runtime  Starting execution for deployment 'test-deploy-001' with 4 registered agents.
+2026-02-28 16:30:02  INFO      core.runtime  4/4 agents returned results.
+2026-02-28 16:30:02  INFO      core.runtime  4/4 results passed judge validation.
+2026-02-28 16:30:02  INFO      core.runtime  Aggregation complete. 4 ranked hypotheses.
+2026-02-28 16:30:02  INFO      httpx  HTTP Request: POST http://testserver/api/analyze "HTTP/1.1 200 OK"
+2026-02-28 16:30:02  INFO      core.runtime  Starting execution for deployment 'test-deploy-001' with 4 registered agents.
+2026-02-28 16:30:03  INFO      core.runtime  4/4 agents returned results.
+2026-02-28 16:30:03  INFO      core.runtime  4/4 results passed judge validation.
+2026-02-28 16:30:03  INFO      core.runtime  Aggregation complete. 4 ranked hypotheses.
+2026-02-28 16:30:03  INFO      httpx  HTTP Request: POST http://testserver/api/analyze "HTTP/1.1 200 OK"
+2026-02-28 16:30:03  INFO      httpx  HTTP Request: GET http://testserver/executions/latest "HTTP/1.1 200 OK"
+2026-02-28 16:30:03  INFO      httpx  HTTP Request: POST http://testserver/api/analyze "HTTP/1.1 400 Bad Request"
+2026-02-28 16:30:03  INFO      httpx  HTTP Request: GET http://testserver/health "HTTP/1.1 200 OK"
+2026-02-28 16:30:03  ERROR     core.executor  Agent 'crash_agent' raised after 0ms — skipping. Error: agent failed
+2026-02-28 16:30:04  ERROR     core.executor  Agent 'slow_agent' timed out after 1.0s (limit: 1s) — skipping.
+2026-02-28 16:30:04  INFO      core.runtime  Starting execution for deployment 'test-001' with 0 registered agents.
+2026-02-28 16:30:04  INFO      core.runtime  0/0 agents returned results.
+2026-02-28 16:30:04  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:30:04  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:30:04  INFO      core.runtime  Starting execution for deployment 'test-001' with 0 registered agents.
+2026-02-28 16:30:04  INFO      core.runtime  0/0 agents returned results.
+2026-02-28 16:30:04  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:30:04  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:30:04  INFO      core.runtime  Starting execution for deployment 'test-001' with 0 registered agents.
+2026-02-28 16:30:04  INFO      core.runtime  0/0 agents returned results.
+2026-02-28 16:30:04  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:30:04  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:30:04  INFO      core.runtime  Starting execution for deployment 'test-001' with 0 registered agents.
+2026-02-28 16:30:04  INFO      core.runtime  0/0 agents returned results.
+2026-02-28 16:30:04  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:30:04  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:30:04  INFO      core.runtime  Starting execution for deployment 'test-001' with 0 registered agents.
+2026-02-28 16:30:04  INFO      core.runtime  0/0 agents returned results.
+2026-02-28 16:30:04  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:30:04  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:30:04  INFO      core.runtime  Starting execution for deployment 'test-001' with 1 registered agents.
+2026-02-28 16:30:04  ERROR     core.executor  Agent 'crash_agent' raised after 0ms — skipping. Error: agent failed
+2026-02-28 16:30:04  INFO      core.runtime  0/1 agents returned results.
+2026-02-28 16:30:04  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:30:04  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:30:04  INFO      core.runtime  Starting execution for deployment 'test-001' with 1 registered agents.
+2026-02-28 16:30:04  INFO      core.runtime  1/1 agents returned results.
+2026-02-28 16:30:04  WARNING   core.runtime  Agent 'hallucinating_agent' result rejected: Hypothesis 'Ghost hypothesis' from agent 'hallucinating_agent' cites unknown signal ID 'sig_999'. Valid IDs: []
+2026-02-28 16:30:04  INFO      core.runtime  0/1 results passed judge validation.
+2026-02-28 16:30:04  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:30:04  INFO      core.runtime  Starting execution for deployment 'test-001' with 2 registered agents.
+2026-02-28 16:30:04  INFO      core.runtime  2/2 agents returned results.
+2026-02-28 16:30:04  INFO      core.runtime  2/2 results passed judge validation.
+2026-02-28 16:30:04  INFO      core.runtime  Aggregation complete. 2 ranked hypotheses.
+2026-02-28 16:30:04  INFO      core.runtime  Starting execution for deployment 'test-001' with 1 registered agents.
+2026-02-28 16:30:04  INFO      core.runtime  1/1 agents returned results.
+2026-02-28 16:30:04  INFO      core.runtime  1/1 results passed judge validation.
+2026-02-28 16:30:04  INFO      core.runtime  Aggregation complete. 1 ranked hypotheses.
+2026-02-28 16:30:04  INFO      core.runtime  Starting execution for deployment 'test-001' with 0 registered agents.
+2026-02-28 16:30:04  INFO      core.runtime  0/0 agents returned results.
+2026-02-28 16:30:04  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:30:04  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:30:04  ERROR     signals.signal_extractor  Analyzer LogAnalyzer failed — skipping. Error: boom
+2026-02-28 16:30:39  INFO      core.runtime  Starting execution for deployment 'deploy-20260228-001' with 4 registered agents.
+2026-02-28 16:30:40  INFO      core.runtime  4/4 agents returned results.
+2026-02-28 16:30:40  INFO      core.runtime  4/4 results passed judge validation.
+2026-02-28 16:30:40  INFO      core.runtime  Aggregation complete. 4 ranked hypotheses.
+2026-02-28 16:30:50  INFO      core.runtime  Starting execution for deployment 'deploy-20260228-001' with 4 registered agents.
+2026-02-28 16:30:51  INFO      core.runtime  4/4 agents returned results.
+2026-02-28 16:30:51  INFO      core.runtime  4/4 results passed judge validation.
+2026-02-28 16:30:51  INFO      core.runtime  Aggregation complete. 4 ranked hypotheses.
+2026-02-28 16:32:00  INFO      core.runtime  Starting execution for deployment 'deploy-20260228-001' with 4 registered agents.
+2026-02-28 16:32:01  INFO      core.runtime  4/4 agents returned results.
+2026-02-28 16:32:01  INFO      core.runtime  4/4 results passed judge validation.
+2026-02-28 16:32:01  INFO      core.runtime  Aggregation complete. 4 ranked hypotheses.
+2026-02-28 16:33:07  INFO      httpx  HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-02-28 16:33:07  INFO      httpx  HTTP Request: POST http://testserver/api/analyze "HTTP/1.1 400 Bad Request"
+2026-02-28 16:33:07  INFO      httpx  HTTP Request: GET http://testserver/health "HTTP/1.1 200 OK"
+2026-02-28 16:33:07  ERROR     core.executor  Agent 'crash_agent' raised after 0ms — skipping. Error: agent failed
+2026-02-28 16:33:08  ERROR     core.executor  Agent 'slow_agent' timed out after 1.0s (limit: 1s) — skipping.
+2026-02-28 16:33:08  INFO      core.runtime  Starting execution for deployment 'test-001' with 0 registered agents.
+2026-02-28 16:33:08  INFO      core.runtime  0/0 agents returned results.
+2026-02-28 16:33:08  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:33:08  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:33:08  INFO      core.runtime  Starting execution for deployment 'test-001' with 0 registered agents.
+2026-02-28 16:33:08  INFO      core.runtime  0/0 agents returned results.
+2026-02-28 16:33:08  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:33:08  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:33:08  INFO      core.runtime  Starting execution for deployment 'test-001' with 0 registered agents.
+2026-02-28 16:33:08  INFO      core.runtime  0/0 agents returned results.
+2026-02-28 16:33:08  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:33:08  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:33:08  INFO      core.runtime  Starting execution for deployment 'test-001' with 0 registered agents.
+2026-02-28 16:33:08  INFO      core.runtime  0/0 agents returned results.
+2026-02-28 16:33:08  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:33:08  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:33:08  INFO      core.runtime  Starting execution for deployment 'test-001' with 0 registered agents.
+2026-02-28 16:33:08  INFO      core.runtime  0/0 agents returned results.
+2026-02-28 16:33:08  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:33:08  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:33:08  INFO      core.runtime  Starting execution for deployment 'test-001' with 1 registered agents.
+2026-02-28 16:33:08  ERROR     core.executor  Agent 'crash_agent' raised after 0ms — skipping. Error: agent failed
+2026-02-28 16:33:08  INFO      core.runtime  0/1 agents returned results.
+2026-02-28 16:33:08  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:33:08  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:33:08  INFO      core.runtime  Starting execution for deployment 'test-001' with 1 registered agents.
+2026-02-28 16:33:08  INFO      core.runtime  1/1 agents returned results.
+2026-02-28 16:33:08  WARNING   core.runtime  Agent 'hallucinating_agent' result rejected: Hypothesis 'Ghost hypothesis' from agent 'hallucinating_agent' cites unknown signal ID 'sig_999'. Valid IDs: []
+2026-02-28 16:33:08  INFO      core.runtime  0/1 results passed judge validation.
+2026-02-28 16:33:08  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:33:08  INFO      core.runtime  Starting execution for deployment 'test-001' with 2 registered agents.
+2026-02-28 16:33:08  INFO      core.runtime  2/2 agents returned results.
+2026-02-28 16:33:08  INFO      core.runtime  2/2 results passed judge validation.
+2026-02-28 16:33:08  INFO      core.runtime  Aggregation complete. 2 ranked hypotheses.
+2026-02-28 16:33:08  INFO      core.runtime  Starting execution for deployment 'test-001' with 1 registered agents.
+2026-02-28 16:33:08  INFO      core.runtime  1/1 agents returned results.
+2026-02-28 16:33:08  INFO      core.runtime  1/1 results passed judge validation.
+2026-02-28 16:33:08  INFO      core.runtime  Aggregation complete. 1 ranked hypotheses.
+2026-02-28 16:33:08  INFO      core.runtime  Starting execution for deployment 'test-001' with 0 registered agents.
+2026-02-28 16:33:08  INFO      core.runtime  0/0 agents returned results.
+2026-02-28 16:33:08  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:33:08  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:33:08  ERROR     signals.signal_extractor  Analyzer LogAnalyzer failed — skipping. Error: boom
+2026-02-28 16:33:27  INFO      core.runtime  Starting execution for deployment 'deploy-20260228-001' with 4 registered agents.
+2026-02-28 16:33:28  INFO      httpx  HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-28 16:33:28  INFO      httpx  HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-28 16:33:29  INFO      core.runtime  4/4 agents returned results.
+2026-02-28 16:33:29  INFO      core.runtime  4/4 results passed judge validation.
+2026-02-28 16:33:29  INFO      core.runtime  Aggregation complete. 2 ranked hypotheses.
+2026-02-28 16:33:34  INFO      core.runtime  Starting execution for deployment 'deploy-20260228-001' with 4 registered agents.
+2026-02-28 16:33:35  INFO      httpx  HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-28 16:33:35  INFO      httpx  HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-28 16:33:36  INFO      core.runtime  4/4 agents returned results.
+2026-02-28 16:33:36  INFO      core.runtime  4/4 results passed judge validation.
+2026-02-28 16:33:36  INFO      core.runtime  Aggregation complete. 2 ranked hypotheses.
+2026-02-28 16:33:46  INFO      core.runtime  Starting execution for deployment 'deploy-20260228-001' with 4 registered agents.
+2026-02-28 16:33:46  INFO      httpx  HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-28 16:33:47  INFO      httpx  HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-28 16:33:47  INFO      core.runtime  4/4 agents returned results.
+2026-02-28 16:33:47  INFO      core.runtime  4/4 results passed judge validation.
+2026-02-28 16:33:47  INFO      core.runtime  Aggregation complete. 2 ranked hypotheses.
+2026-02-28 16:36:32  INFO      httpx  HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-02-28 16:36:32  INFO      httpx  HTTP Request: POST http://testserver/api/analyze "HTTP/1.1 400 Bad Request"
+2026-02-28 16:36:32  INFO      httpx  HTTP Request: GET http://testserver/health "HTTP/1.1 200 OK"
+2026-02-28 16:36:32  ERROR     core.executor  Agent 'crash_agent' raised after 0ms — skipping. Error: agent failed
+2026-02-28 16:36:33  ERROR     core.executor  Agent 'slow_agent' timed out after 1.0s (limit: 1s) — skipping.
+2026-02-28 16:36:33  INFO      core.runtime  Starting execution for deployment 'test-001' with 0 registered agents.
+2026-02-28 16:36:33  INFO      core.runtime  0/0 agents returned results.
+2026-02-28 16:36:33  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:36:33  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:36:33  INFO      core.runtime  Starting execution for deployment 'test-001' with 0 registered agents.
+2026-02-28 16:36:33  INFO      core.runtime  0/0 agents returned results.
+2026-02-28 16:36:33  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:36:33  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:36:33  INFO      core.runtime  Starting execution for deployment 'test-001' with 0 registered agents.
+2026-02-28 16:36:33  INFO      core.runtime  0/0 agents returned results.
+2026-02-28 16:36:33  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:36:33  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:36:33  INFO      core.runtime  Starting execution for deployment 'test-001' with 0 registered agents.
+2026-02-28 16:36:33  INFO      core.runtime  0/0 agents returned results.
+2026-02-28 16:36:33  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:36:33  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:36:33  INFO      core.runtime  Starting execution for deployment 'test-001' with 0 registered agents.
+2026-02-28 16:36:33  INFO      core.runtime  0/0 agents returned results.
+2026-02-28 16:36:33  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:36:33  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:36:33  INFO      core.runtime  Starting execution for deployment 'test-001' with 1 registered agents.
+2026-02-28 16:36:33  ERROR     core.executor  Agent 'crash_agent' raised after 0ms — skipping. Error: agent failed
+2026-02-28 16:36:33  INFO      core.runtime  0/1 agents returned results.
+2026-02-28 16:36:33  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:36:33  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:36:33  INFO      core.runtime  Starting execution for deployment 'test-001' with 1 registered agents.
+2026-02-28 16:36:33  INFO      core.runtime  1/1 agents returned results.
+2026-02-28 16:36:33  WARNING   core.runtime  Agent 'hallucinating_agent' result rejected: Hypothesis 'Ghost hypothesis' from agent 'hallucinating_agent' cites unknown signal ID 'sig_999'. Valid IDs: []
+2026-02-28 16:36:33  INFO      core.runtime  0/1 results passed judge validation.
+2026-02-28 16:36:33  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:36:33  INFO      core.runtime  Starting execution for deployment 'test-001' with 2 registered agents.
+2026-02-28 16:36:33  INFO      core.runtime  2/2 agents returned results.
+2026-02-28 16:36:33  INFO      core.runtime  2/2 results passed judge validation.
+2026-02-28 16:36:33  INFO      core.runtime  Aggregation complete. 2 ranked hypotheses.
+2026-02-28 16:36:33  INFO      core.runtime  Starting execution for deployment 'test-001' with 1 registered agents.
+2026-02-28 16:36:33  INFO      core.runtime  1/1 agents returned results.
+2026-02-28 16:36:33  INFO      core.runtime  1/1 results passed judge validation.
+2026-02-28 16:36:33  INFO      core.runtime  Aggregation complete. 1 ranked hypotheses.
+2026-02-28 16:36:33  INFO      core.runtime  Starting execution for deployment 'test-001' with 0 registered agents.
+2026-02-28 16:36:33  INFO      core.runtime  0/0 agents returned results.
+2026-02-28 16:36:33  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:36:33  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:36:33  ERROR     signals.signal_extractor  Analyzer LogAnalyzer failed — skipping. Error: boom
+2026-02-28 16:37:18  INFO      core.runtime  Starting execution for deployment 'deploy-20260228-001' with 4 registered agents.
+2026-02-28 16:37:18  INFO      httpx  HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-28 16:37:19  INFO      httpx  HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-28 16:37:19  INFO      core.runtime  4/4 agents returned results.
+2026-02-28 16:37:19  INFO      core.runtime  4/4 results passed judge validation.
+2026-02-28 16:37:19  INFO      core.runtime  Aggregation complete. 2 ranked hypotheses.
+2026-02-28 16:42:05  INFO      httpx  HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2026-02-28 16:42:05  INFO      httpx  HTTP Request: POST http://testserver/api/analyze "HTTP/1.1 400 Bad Request"
+2026-02-28 16:42:05  INFO      httpx  HTTP Request: GET http://testserver/health "HTTP/1.1 200 OK"
+2026-02-28 16:42:05  ERROR     core.executor  Agent 'crash_agent' raised after 0ms — skipping. Error: agent failed
+2026-02-28 16:42:06  ERROR     core.executor  Agent 'slow_agent' timed out after 1.0s (limit: 1s) — skipping.
+2026-02-28 16:42:06  INFO      core.runtime  Starting execution for deployment 'test-001' with 0 registered agents.
+2026-02-28 16:42:06  INFO      core.runtime  0/0 agents returned results.
+2026-02-28 16:42:06  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:42:06  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:42:06  INFO      core.runtime  Starting execution for deployment 'test-001' with 0 registered agents.
+2026-02-28 16:42:06  INFO      core.runtime  0/0 agents returned results.
+2026-02-28 16:42:06  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:42:06  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:42:06  INFO      core.runtime  Starting execution for deployment 'test-001' with 0 registered agents.
+2026-02-28 16:42:06  INFO      core.runtime  0/0 agents returned results.
+2026-02-28 16:42:06  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:42:06  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:42:06  INFO      core.runtime  Starting execution for deployment 'test-001' with 0 registered agents.
+2026-02-28 16:42:06  INFO      core.runtime  0/0 agents returned results.
+2026-02-28 16:42:06  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:42:06  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:42:06  INFO      core.runtime  Starting execution for deployment 'test-001' with 0 registered agents.
+2026-02-28 16:42:06  INFO      core.runtime  0/0 agents returned results.
+2026-02-28 16:42:06  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:42:06  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:42:06  INFO      core.runtime  Starting execution for deployment 'test-001' with 1 registered agents.
+2026-02-28 16:42:06  ERROR     core.executor  Agent 'crash_agent' raised after 0ms — skipping. Error: agent failed
+2026-02-28 16:42:06  INFO      core.runtime  0/1 agents returned results.
+2026-02-28 16:42:06  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:42:06  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:42:06  INFO      core.runtime  Starting execution for deployment 'test-001' with 1 registered agents.
+2026-02-28 16:42:06  INFO      core.runtime  1/1 agents returned results.
+2026-02-28 16:42:06  WARNING   core.runtime  Agent 'hallucinating_agent' result rejected: Hypothesis 'Ghost hypothesis' from agent 'hallucinating_agent' cites unknown signal ID 'sig_999'. Valid IDs: []
+2026-02-28 16:42:06  INFO      core.runtime  0/1 results passed judge validation.
+2026-02-28 16:42:06  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:42:06  INFO      core.runtime  Starting execution for deployment 'test-001' with 2 registered agents.
+2026-02-28 16:42:06  INFO      core.runtime  2/2 agents returned results.
+2026-02-28 16:42:06  INFO      core.runtime  2/2 results passed judge validation.
+2026-02-28 16:42:06  INFO      core.runtime  Aggregation complete. 2 ranked hypotheses.
+2026-02-28 16:42:06  INFO      core.runtime  Starting execution for deployment 'test-001' with 1 registered agents.
+2026-02-28 16:42:06  INFO      core.runtime  1/1 agents returned results.
+2026-02-28 16:42:06  INFO      core.runtime  1/1 results passed judge validation.
+2026-02-28 16:42:06  INFO      core.runtime  Aggregation complete. 1 ranked hypotheses.
+2026-02-28 16:42:06  INFO      core.runtime  Starting execution for deployment 'test-001' with 0 registered agents.
+2026-02-28 16:42:06  INFO      core.runtime  0/0 agents returned results.
+2026-02-28 16:42:06  INFO      core.runtime  0/0 results passed judge validation.
+2026-02-28 16:42:06  INFO      core.runtime  Aggregation complete. 0 ranked hypotheses.
+2026-02-28 16:42:06  ERROR     signals.signal_extractor  Analyzer LogAnalyzer failed — skipping. Error: boom
+2026-02-28 16:42:34  INFO      core.runtime  Starting execution for deployment 'deploy-2024-11-15-v2.3.1' with 4 registered agents.
+2026-02-28 16:42:34  INFO      httpx  HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-28 16:42:34  INFO      httpx  HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-28 16:42:35  INFO      httpx  HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-28 16:42:35  INFO      httpx  HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-28 16:42:41  INFO      core.runtime  4/4 agents returned results.
+2026-02-28 16:42:41  INFO      core.runtime  4/4 results passed judge validation.
+2026-02-28 16:42:41  INFO      core.runtime  Aggregation complete. 5 ranked hypotheses.

@@ -17,7 +17,7 @@ run:
 	.venv/bin/python main.py
 
 serve:
-	.venv/bin/python server.py
+	.venv/bin/uvicorn main:app --reload --host 127.0.0.1 --port 8000
 
 test:
 	.venv/bin/python -m pytest -q -m "not live"

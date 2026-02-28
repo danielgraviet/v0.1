@@ -29,6 +29,7 @@ Run locally:
     uv run uvicorn main:app --reload
 """
 
+import asyncio
 import json
 import logging
 import logging.handlers
@@ -41,12 +42,19 @@ from typing import Literal
 from dotenv import load_dotenv
 from fastapi import BackgroundTasks, FastAPI, Header, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse, StreamingResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 load_dotenv()
 
 from core.runtime import AlphaRuntime
+from llm.openrouter import OpenRouterClient
 from schemas.incident import IncidentInput
+from sre.agents.commit_agent import CommitAgent
+from sre.agents.config_agent import ConfigAgent
+from sre.agents.log_agent import LogAgent
+from sre.agents.metrics_agent import MetricsAgent
 from sre.integrations.sentry import (
     SentryWebhookPayload,
     fetch_enrichment,
@@ -95,16 +103,10 @@ app.add_middleware(
 # ---------------------------------------------------------------------------
 
 runtime = AlphaRuntime()
-
-# TODO Phase 4: replace with real agents
-# from sre.agents.log_agent import LogAgent
-# from sre.agents.metrics_agent import MetricsAgent
-# from sre.agents.commit_agent import CommitAgent
-# from llm.openrouter import OpenRouterClient
-#
-# runtime.register(LogAgent(llm=OpenRouterClient("anthropic/claude-sonnet-4-5")))
-# runtime.register(MetricsAgent(llm=OpenRouterClient("google/gemini-2.0-flash-001")))
-# runtime.register(CommitAgent(llm=OpenRouterClient("anthropic/claude-sonnet-4-5")))
+runtime.register(LogAgent(llm=OpenRouterClient("anthropic/claude-sonnet-4-6")))
+runtime.register(MetricsAgent(llm=OpenRouterClient("google/gemini-2.0-flash-001")))
+runtime.register(CommitAgent(llm=OpenRouterClient("anthropic/claude-sonnet-4-6")))
+runtime.register(ConfigAgent(llm=OpenRouterClient("google/gemini-2.0-flash-001")))
 
 # ---------------------------------------------------------------------------
 # Execution store
@@ -202,6 +204,55 @@ async def _run_analysis(execution_id: str, payload: SentryWebhookPayload) -> Non
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
+
+@app.get("/")
+def dashboard():
+    return FileResponse("frontend/index.html")
+
+
+@app.post("/api/analyze")
+async def analyze_incident(request: Request):
+    """Run the pipeline and stream agent events as NDJSON."""
+    body = await request.json()
+    try:
+        incident = IncidentInput(**body)
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
+    eid = str(uuid.uuid4())
+
+    async def stream():
+        eq: asyncio.Queue = asyncio.Queue()
+        _save(ExecutionRecord(
+            execution_id=eid, status="pending",
+            created_at=datetime.now(timezone.utc).isoformat(),
+        ))
+
+        async def run():
+            try:
+                result = await runtime.execute(incident, event_queue=eq)
+                _save(_store[eid].model_copy(update={
+                    "status": "complete",
+                    "hypotheses": [h.model_dump() for h in result.ranked_hypotheses],
+                    "signals": [s.model_dump() for s in result.signals_used],
+                    "requires_human_review": result.requires_human_review,
+                }))
+            except Exception as exc:
+                _save(_store[eid].model_copy(update={"status": "failed", "error": str(exc)}))
+            finally:
+                await eq.put(None)
+
+        task = asyncio.create_task(run())
+        while True:
+            event = await eq.get()
+            if event is None:
+                break
+            yield json.dumps({"type": "agent_event", **event.model_dump()}) + "\n"
+        await task
+        yield json.dumps({"type": "result", **_store[eid].model_dump()}) + "\n"
+
+    return StreamingResponse(stream(), media_type="application/x-ndjson")
 
 
 # ---------------------------------------------------------------------------
@@ -333,3 +384,11 @@ def _stub_github_enrichment() -> dict:
         ],
         "config_snapshot": {"MAX_DB_CONNECTIONS": 5, "CACHE_TTL_SECONDS": 0},
     }
+
+
+# ---------------------------------------------------------------------------
+# Static file serving — must be AFTER all route definitions
+# ---------------------------------------------------------------------------
+
+app.mount("/static", StaticFiles(directory="frontend/static"), name="static")
+app.mount("/fixtures", StaticFiles(directory="fixtures"), name="fixtures")
