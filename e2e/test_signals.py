@@ -157,6 +157,13 @@ class TestMetricsAnalyzer:
         signals = MetricsAnalyzer().analyze(metrics)
         assert _find(signals, "metric_degradation") is None
 
+    def test_zero_cache_baseline_does_not_crash_and_uses_absolute_threshold(self):
+        metrics = {"cache_hit_rate": 0.20, "cache_hit_rate_baseline": 0.0}
+        signals = MetricsAnalyzer().analyze(metrics)
+        deg = _find(signals, "metric_degradation")
+        assert deg is not None
+        assert "below healthy threshold" in deg.description
+
     def test_all_three_signals_produced_from_full_incident_b_metrics(self):
         metrics = {
             "latency_p99_ms": 4800,

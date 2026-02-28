@@ -102,7 +102,7 @@ class MetricsAnalyzer:
         if not (absolute_bad or relative_bad):
             return []
 
-        if baseline is not None:
+        if baseline is not None and baseline > 0:
             desc = (
                 f"Cache hit rate dropped from {baseline:.0%} to {hit_rate:.0%} "
                 f"({(baseline - hit_rate) / baseline:.0%} degradation)"

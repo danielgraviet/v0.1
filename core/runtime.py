@@ -21,6 +21,7 @@ runtime — never the reverse.
 
 import asyncio
 import logging
+from typing import Protocol
 
 from agents.base import AgentContext, BaseAgent
 from aggregation.aggregator import Aggregator
@@ -28,8 +29,10 @@ from core.executor import ParallelExecutor
 from core.memory import StructuredMemory
 from core.registry import AgentRegistry
 from judge.judge import JudgeLayer
+from schemas.hypothesis import Hypothesis
 from schemas.incident import IncidentInput
-from schemas.result import ExecutionResult
+from schemas.result import ExecutionResult, SynthesisResult
+from schemas.signal import Signal
 from signals.signal_extractor import SignalExtractor
 
 logger = logging.getLogger(__name__)
@@ -54,12 +57,17 @@ class AlphaRuntime:
         _aggregator: Ranks and deduplicates hypotheses into a final list.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, synthesizer: "SynthesisClient | None" = None) -> None:
         """Initialise the runtime with an empty agent registry."""
         self._registry = AgentRegistry()
         self._executor = ParallelExecutor()
         self._judge = JudgeLayer()
         self._aggregator = Aggregator()
+        self._synthesizer = synthesizer
+
+    def set_synthesizer(self, synthesizer: "SynthesisClient") -> None:
+        """Inject the post-aggregation synthesis component."""
+        self._synthesizer = synthesizer
 
     def register(self, agent: BaseAgent) -> None:
         """Register an agent to participate in every execute() call.
@@ -167,7 +175,10 @@ class AlphaRuntime:
         ranked_hypotheses = self._aggregator.aggregate(judged_results)
         logger.info("Aggregation complete. %d ranked hypotheses.", len(ranked_hypotheses))
 
-        # Step 7 — decide requires_human_review.
+        # Step 7 — run synthesis after aggregation.
+        synthesis = await self._synthesize(memory.get_signals(), ranked_hypotheses)
+
+        # Step 8 — decide requires_human_review.
         # Flag the result for human review if:
         # - No hypotheses were produced at all, or
         # - The top hypothesis confidence is below the threshold (0.5).
@@ -180,6 +191,7 @@ class AlphaRuntime:
         return ExecutionResult(
             ranked_hypotheses=ranked_hypotheses,
             signals_used=memory.get_signals(),
+            synthesis=synthesis,
             requires_human_review=requires_human_review,
         )
 
@@ -203,3 +215,43 @@ class AlphaRuntime:
         signals = SignalExtractor().extract(payload)
         memory.add_signals(signals)
         return memory.get_signals()
+
+    async def _synthesize(
+        self,
+        signals: list[Signal],
+        ranked_hypotheses: list[Hypothesis],
+    ) -> SynthesisResult:
+        """Run the injected synthesis component or return a deterministic fallback."""
+        if self._synthesizer is None:
+            if not ranked_hypotheses:
+                return SynthesisResult(
+                    summary=(
+                        "No validated hypotheses were produced from the extracted signals. "
+                        "Further human investigation is required."
+                    ),
+                    key_finding="Insufficient evidence to determine a likely root cause.",
+                    confidence_in_ranking=0.0,
+                )
+
+            top = ranked_hypotheses[0]
+            return SynthesisResult(
+                summary=(
+                    f"The current ranking is led by '{top.label}' based on cited incident signals. "
+                    "Secondary hypotheses remain plausible but are currently less supported."
+                ),
+                key_finding=f"{top.label}: {top.description}",
+                confidence_in_ranking=top.confidence,
+            )
+
+        return await self._synthesizer.synthesize(signals, ranked_hypotheses)
+
+
+class SynthesisClient(Protocol):
+    """Protocol for post-aggregation synthesis components."""
+
+    async def synthesize(
+        self,
+        signals: list[Signal],
+        ranked_hypotheses: list[Hypothesis],
+    ) -> SynthesisResult:
+        """Generate a synthesis narrative from ranked hypotheses."""
