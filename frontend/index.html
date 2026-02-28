@@ -38,7 +38,7 @@
           placeholder="Paste incident JSON here…"
         ></textarea>
         <button id="analyze-btn" class="btn btn--primary" onclick="AlphaSRE.analyze()">
-          ANALYZE →
+          RUN ALPHA →
         </button>
         <div id="input-error" class="error-msg hidden"></div>
       </div>
@@ -54,7 +54,7 @@
         <div class="agent-grid">
 
           <div class="agent-card" id="agent-log">
-            <div class="agent-name">LogAgent</div>
+            <div class="agent-name">Log Agent</div>
             <div class="agent-status">
               <span class="badge badge--pending">PENDING</span>
             </div>
@@ -62,7 +62,7 @@
           </div>
 
           <div class="agent-card" id="agent-metrics">
-            <div class="agent-name">MetricsAgent</div>
+            <div class="agent-name">Metrics Agent</div>
             <div class="agent-status">
               <span class="badge badge--pending">PENDING</span>
             </div>
@@ -70,7 +70,7 @@
           </div>
 
           <div class="agent-card" id="agent-commit">
-            <div class="agent-name">CommitAgent</div>
+            <div class="agent-name">Commit Agent</div>
             <div class="agent-status">
               <span class="badge badge--pending">PENDING</span>
             </div>
@@ -78,7 +78,7 @@
           </div>
 
           <div class="agent-card" id="agent-config">
-            <div class="agent-name">ConfigAgent</div>
+            <div class="agent-name">Config Agent</div>
             <div class="agent-status">
               <span class="badge badge--pending">PENDING</span>
             </div>
@@ -97,9 +97,12 @@
       </div>
       <div class="panel-body">
         <div id="hypotheses-list">
-          <div class="empty-state">Run analysis to see ranked hypotheses.</div>
+          <div class="empty-state">Run Alpha to see ranked hypotheses.</div>
         </div>
         <div id="review-flag" class="hidden"></div>
+        <div id="approval-gate" class="approval-gate hidden">
+          <span class="approval-label">AI-generated diagnoses. Please review before applying.</span>
+        </div>
       </div>
     </section>
 

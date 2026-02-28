@@ -81,9 +81,15 @@ const AlphaSRE = (() => {
             <div class="hypothesis-header">
               <span class="hypothesis-rank">#${i + 1}</span>
               <span class="hypothesis-label">${escapeHtml(h.label)}</span>
-              <span class="hypothesis-confidence confidence--${cls}">${pct}%</span>
-              <span class="hypothesis-severity">${escapeHtml(h.severity)}</span>
-              <span class="hypothesis-agents">${escapeHtml(h.contributing_agent || "—")}</span>
+              <span class="hypothesis-confidence confidence--${cls}">${pct}% Confidence</span>
+            </div>
+            <div class="confidence-bar-track">
+              <div class="confidence-bar-fill confidence-bar-fill--${cls === "high" ? "" : cls}" style="width:${pct}%"></div>
+            </div>
+            <div class="hypothesis-desc">${escapeHtml(h.description)}</div>
+            <div class="hypothesis-meta">
+              <span class="hypothesis-agents">agents: ${h.contributing_agents ? h.contributing_agents.join(", ") : h.contributing_agent || "—"}</span>
+              <span class="hypothesis-signals">signals: ${h.supporting_signals ? h.supporting_signals.join(", ") : "—"}</span>
             </div>
           </div>`;
       })
