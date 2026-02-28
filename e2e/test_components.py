@@ -1,8 +1,8 @@
 """Component tests for the runtime layer.
 
-Covers StructuredMemory, AgentRegistry, JudgeLayer, Aggregator, and
-ParallelExecutor. No API keys or monkeypatching required — all tests use
-stub agents and in-memory data only.
+Covers StructuredMemory, AgentRegistry, JudgeLayer, Aggregator,
+ParallelExecutor, and AlphaRuntime. No API keys or monkeypatching required —
+all tests use stub agents and in-memory data only.
 """
 
 import asyncio
@@ -14,11 +14,12 @@ from aggregation.aggregator import Aggregator
 from core.executor import ParallelExecutor
 from core.memory import StructuredMemory
 from core.registry import AgentRegistry
+from core.runtime import AlphaRuntime
 from judge.judge import JudgeLayer, JudgedResult
 from llm.base import LLMClient
 from schemas.hypothesis import Hypothesis
 from schemas.incident import IncidentInput
-from schemas.result import AgentResult
+from schemas.result import AgentResult, ExecutionResult
 from schemas.signal import Signal
 
 
@@ -293,3 +294,164 @@ class TestParallelExecutor:
         executor = ParallelExecutor()
         results = await executor.execute([], context)
         assert results == []
+
+
+# ── AlphaRuntime ──────────────────────────────────────────────────────────────
+
+def make_incident(**overrides):
+    defaults = dict(
+        deployment_id="test-001",
+        logs=[],
+        metrics={},
+        recent_commits=[],
+        config_snapshot={},
+    )
+    return IncidentInput(**{**defaults, **overrides})
+
+
+class SeededRuntime(AlphaRuntime):
+    """AlphaRuntime subclass that pre-seeds memory with two known signals.
+
+    The default _extract_signals() is a Phase 3 placeholder that returns
+    an empty list. This subclass overrides it so agents can cite real signal
+    IDs and pass the judge's cross-reference check.
+    """
+    def _extract_signals(self, payload, memory):
+        memory.add_signals([
+            Signal(id="sig_001", type="log_anomaly", description="Error spike",
+                   severity="high", source="log_analyzer"),
+            Signal(id="sig_002", type="metric_spike", description="Latency spike",
+                   severity="high", source="metrics_analyzer"),
+        ])
+        return memory.get_signals()
+
+
+class TestAlphaRuntime:
+    async def test_execute_returns_execution_result(self):
+        runtime = AlphaRuntime()
+        result = await runtime.execute(make_incident())
+        assert isinstance(result, ExecutionResult)
+
+    async def test_no_agents_returns_empty_hypotheses(self):
+        runtime = AlphaRuntime()
+        result = await runtime.execute(make_incident())
+        assert result.ranked_hypotheses == []
+
+    async def test_requires_human_review_when_no_hypotheses(self):
+        runtime = AlphaRuntime()
+        result = await runtime.execute(make_incident())
+        assert result.requires_human_review is True
+
+    async def test_each_execution_gets_unique_id(self):
+        runtime = AlphaRuntime()
+        r1 = await runtime.execute(make_incident())
+        r2 = await runtime.execute(make_incident())
+        assert r1.execution_id != r2.execution_id
+
+    def test_register_raises_on_duplicate_name(self):
+        runtime = AlphaRuntime()
+        runtime.register(StubAgent(StubLLM()))
+        with pytest.raises(ValueError, match="already registered"):
+            runtime.register(StubAgent(StubLLM()))
+
+    async def test_crashing_agent_does_not_crash_runtime(self):
+        # CrashAgent raises RuntimeError on every run — the runtime should
+        # swallow it and still return a valid ExecutionResult.
+        runtime = AlphaRuntime()
+        runtime.register(CrashAgent(StubLLM()))
+        result = await runtime.execute(make_incident())
+        assert isinstance(result, ExecutionResult)
+
+    async def test_judge_rejects_hallucinated_signal_id(self):
+        # Agent cites sig_999 which was never extracted into memory.
+        # The judge should reject it, leaving zero ranked hypotheses.
+        class HallucinatingAgent(BaseAgent):
+            name = "hallucinating_agent"
+
+            async def run(self, context: AgentContext) -> AgentResult:
+                return AgentResult(
+                    agent_name=self.name,
+                    hypotheses=[Hypothesis(
+                        label="Ghost hypothesis",
+                        description="Cites a signal that does not exist",
+                        confidence=0.9,
+                        severity="high",
+                        supporting_signals=["sig_999"],
+                        contributing_agent=self.name,
+                    )],
+                    execution_time_ms=0.0,
+                )
+
+        runtime = AlphaRuntime()
+        runtime.register(HallucinatingAgent(StubLLM()))
+        result = await runtime.execute(make_incident())
+        assert result.ranked_hypotheses == []
+
+    async def test_two_agents_both_appear_in_output(self):
+        # Both agents must appear as contributing_agent in the results,
+        # proving the executor ran them in parallel.
+        class AgentA(BaseAgent):
+            name = "agent_a"
+
+            async def run(self, context: AgentContext) -> AgentResult:
+                return AgentResult(
+                    agent_name=self.name,
+                    hypotheses=[Hypothesis(
+                        label="Cache Issue", description="Cache miss cascade",
+                        confidence=0.7, severity="medium",
+                        supporting_signals=["sig_001"], contributing_agent=self.name,
+                    )],
+                    execution_time_ms=0.0,
+                )
+
+        class AgentB(BaseAgent):
+            name = "agent_b"
+
+            async def run(self, context: AgentContext) -> AgentResult:
+                return AgentResult(
+                    agent_name=self.name,
+                    hypotheses=[Hypothesis(
+                        label="DB Saturation", description="Pool exhausted",
+                        confidence=0.8, severity="high",
+                        supporting_signals=["sig_002"], contributing_agent=self.name,
+                    )],
+                    execution_time_ms=0.0,
+                )
+
+        runtime = SeededRuntime()
+        runtime.register(AgentA(StubLLM()))
+        runtime.register(AgentB(StubLLM()))
+        result = await runtime.execute(make_incident())
+
+        all_agents = ", ".join(h.contributing_agent for h in result.ranked_hypotheses)
+        assert "agent_a" in all_agents
+        assert "agent_b" in all_agents
+
+    async def test_does_not_require_review_when_high_confidence(self):
+        class HighConfAgent(BaseAgent):
+            name = "high_conf_agent"
+
+            async def run(self, context: AgentContext) -> AgentResult:
+                return AgentResult(
+                    agent_name=self.name,
+                    hypotheses=[Hypothesis(
+                        label="Clear Root Cause", description="High confidence finding",
+                        confidence=0.9, severity="high",
+                        supporting_signals=["sig_001"], contributing_agent=self.name,
+                    )],
+                    execution_time_ms=0.0,
+                )
+
+        runtime = SeededRuntime()
+        runtime.register(HighConfAgent(StubLLM()))
+        result = await runtime.execute(make_incident())
+        assert result.requires_human_review is False
+
+    async def test_signals_used_reflects_memory(self):
+        # signals_used in ExecutionResult should contain whatever
+        # _extract_signals wrote into memory during the run.
+        runtime = SeededRuntime()
+        result = await runtime.execute(make_incident())
+        assert len(result.signals_used) == 2
+        signal_ids = {s.id for s in result.signals_used}
+        assert signal_ids == {"sig_001", "sig_002"}
