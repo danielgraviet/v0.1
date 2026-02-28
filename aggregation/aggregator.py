@@ -62,7 +62,7 @@ class Aggregator:
         ranked = [self._merge_group(group) for group in groups]
         ranked.sort(key=lambda h: h.confidence, reverse=True)
 
-        return ranked[:5]
+        return ranked[:5] # why are we slicing 5? 
 
     # ── Private helpers ───────────────────────────────────────────────────────
 
@@ -78,7 +78,7 @@ class Aggregator:
         hypotheses = []
         for judged in results:
             if judged.valid:
-                hypotheses.extend(judged.result.hypotheses)
+                hypotheses.extend(judged.result.hypotheses) # what does extend do?
         return hypotheses
 
     def _group_by_label(self, hypotheses: list[Hypothesis]) -> list[list[Hypothesis]]:
