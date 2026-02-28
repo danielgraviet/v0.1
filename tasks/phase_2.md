@@ -157,10 +157,10 @@ class OpenRouterClient(LLMClient):
 
 Agent instantiation becomes:
 ```python
-LogAgent(llm=OpenRouterClient("anthropic/claude-sonnet-4-6"))
-MetricsAgent(llm=OpenRouterClient("google/gemini-2.0-flash"))
-CommitAgent(llm=OpenRouterClient("anthropic/claude-sonnet-4-6"))
-ConfigAgent(llm=OpenRouterClient("google/gemini-2.0-flash"))
+LogAgent(llm=OpenRouterClient("anthropic/claude-sonnet-4.5"))
+MetricsAgent(llm=OpenRouterClient("google/gemini-2.0-flash-001"))
+CommitAgent(llm=OpenRouterClient("anthropic/claude-sonnet-4.5"))
+ConfigAgent(llm=OpenRouterClient("google/gemini-2.0-flash-001"))
 ```
 
 Swapping to Cerebras later requires changing one string: `"cerebras/llama-3.3-70b"`. The rest of the system is unchanged.
@@ -228,10 +228,10 @@ alpha/
 │
 └── sre/
     ├── agents/
-    │   ├── log_agent.py          ← LogAgent (claude-sonnet-4-6)
-    │   ├── metrics_agent.py      ← MetricsAgent (gemini-2.0-flash)
-    │   ├── commit_agent.py       ← CommitAgent (claude-sonnet-4-6)
-    │   ├── config_agent.py       ← ConfigAgent (gemini-2.0-flash)
+    │   ├── log_agent.py          ← LogAgent (claude-sonnet-4.5)
+    │   ├── metrics_agent.py      ← MetricsAgent (gemini-2.0-flash-001)
+    │   ├── commit_agent.py       ← CommitAgent (claude-sonnet-4.5)
+    │   ├── config_agent.py       ← ConfigAgent (gemini-2.0-flash-001)
     │   └── synthesis_agent.py    ← SynthesisAgent (runs after aggregation)
     │
     ├── extractors/

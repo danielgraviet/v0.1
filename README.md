@@ -9,6 +9,7 @@ A multi-agent AI system for site reliability engineering. Alpha accepts a struct
 ![Alpha Overview](assets/alpha_overview_flowchart.svg)
 
 Edit the source diagram: [assets/alpha_overview_flowchart.drawio](assets/alpha_overview_flowchart.drawio)
+Team onboarding guide: [ENGINEERING_ONBOARDING.md](ENGINEERING_ONBOARDING.md)
 
 ---
 
