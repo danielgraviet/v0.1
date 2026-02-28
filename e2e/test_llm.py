@@ -1,10 +1,10 @@
 """LLM client tests.
 
-Tests for the LLMClient abstraction and OpenRouterClient implementation.
+Tests for the LLMClient abstraction and provider implementations.
 
 TestLLMClientAbstract  — no API key needed, runs in CI
-TestOpenRouterClient   — the real API call test is skipped if OPENROUTER_API_KEY
-                         is not set in the environment or .env file
+TestOpenRouterClient   — live API tests skipped if OPENROUTER_API_KEY is missing
+TestCerebrasClient     — live API tests skipped if CEREBRAS_API_KEY is missing
 """
 
 import os
@@ -12,6 +12,7 @@ import os
 import pytest
 
 from llm.base import LLMClient
+from llm.cerebras import CerebrasClient
 from llm.openrouter import OpenRouterClient
 
 
@@ -87,3 +88,32 @@ class TestOpenRouterClient:
 
         assert isinstance(claude_response, str) and len(claude_response.strip()) > 0
         assert isinstance(gemini_response, str) and len(gemini_response.strip()) > 0
+
+
+# ── CerebrasClient ───────────────────────────────────────────────────────────
+
+class TestCerebrasClient:
+    def test_raises_immediately_if_api_key_missing(self, monkeypatch):
+        """Missing key must raise KeyError at construction, not at first call."""
+        monkeypatch.delenv("CEREBRAS_API_KEY", raising=False)
+        with pytest.raises(KeyError):
+            CerebrasClient(model="llama3.1-8b")
+
+    def test_is_subclass_of_llm_client(self):
+        """CerebrasClient must satisfy the LLMClient interface."""
+        assert issubclass(CerebrasClient, LLMClient)
+
+    @pytest.mark.skipif(
+        not os.getenv("CEREBRAS_API_KEY"),
+        reason="CEREBRAS_API_KEY not set — skipping live API call",
+    )
+    @pytest.mark.live
+    async def test_real_api_call_returns_string(self):
+        """Make a real call to Cerebras and verify we get a non-empty string back."""
+        client = CerebrasClient(model="llama3.1-8b")
+        response = await client.complete(
+            system="You are a test assistant. Reply with one word only, no punctuation.",
+            user="Say the word pong.",
+        )
+        assert isinstance(response, str)
+        assert len(response.strip()) > 0
