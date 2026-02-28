@@ -1,77 +1,98 @@
-"""Alpha SRE — webhook entry point.
+"""Alpha SRE — webhook entry point and execution API.
 
-This is the intake layer. It sits in front of the runtime and is responsible
-for three things:
-1. Receiving the Sentry webhook and validating its signature
-2. Fetching enrichment data (Sentry events, GitHub commits + config)
-3. Building an IncidentInput and handing it to AlphaRuntime.execute()
+This file handles two concerns:
 
-The runtime knows nothing about Sentry, GitHub, or HTTP. This file is the
-only place that touches external APIs and request/response objects.
+1. Intake — receives Sentry webhooks, validates them, and kicks off analysis
+   as a background task so Sentry gets its 200 immediately.
+
+2. Results API — exposes read endpoints the frontend polls to get results.
+
+Flow after a webhook arrives:
+    POST /webhooks/sentry
+        → validate signature
+        → parse payload
+        → create pending ExecutionRecord in store
+        → start background task
+        → return 200 + execution_id to Sentry immediately
+
+    background task:
+        → fetch Sentry enrichment
+        → fetch GitHub enrichment (stub)
+        → run AlphaRuntime.execute()
+        → update record to status="complete" (or "failed")
+
+    frontend polls:
+        GET /executions/latest  or  GET /executions/{id}
+        → returns ExecutionRecord with status + hypotheses + signals
 
 Run locally:
     uv run uvicorn main:app --reload
-
-Sentry setup (one-time per client):
-    Sentry → Settings → Integrations → Internal Integration → Webhooks
-    → Add webhook URL: https://your-domain.com/webhooks/sentry
-    → Check: Issue alerts
 """
 
+import json
 import logging
 import logging.handlers
 import os
 import pathlib
+import uuid
+from datetime import datetime, timezone
+from typing import Literal
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, Header, HTTPException, Request
+from fastapi import BackgroundTasks, FastAPI, Header, HTTPException, Request
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 
 load_dotenv()
 
 from core.runtime import AlphaRuntime
 from schemas.incident import IncidentInput
 from sre.integrations.sentry import (
+    SentryWebhookPayload,
     fetch_enrichment,
     parse_webhook_payload,
     verify_sentry_signature,
 )
 
 # ---------------------------------------------------------------------------
-# Logging — writes to console and alpha_sre.log at the project root
+# Logging
 # ---------------------------------------------------------------------------
 
 LOG_FILE = pathlib.Path(__file__).parent / "alpha_sre.log"
 LOG_FORMAT = "%(asctime)s  %(levelname)-8s  %(name)s  %(message)s"
 LOG_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
-# Rotating file handler — caps the log at 1 MB, keeps 3 old files.
-# So you'll have alpha_sre.log, alpha_sre.log.1, alpha_sre.log.2 at most.
 _file_handler = logging.handlers.RotatingFileHandler(
-    LOG_FILE,
-    maxBytes=1_000_000,
-    backupCount=3,
-    encoding="utf-8",
+    LOG_FILE, maxBytes=1_000_000, backupCount=3, encoding="utf-8",
 )
 _file_handler.setFormatter(logging.Formatter(LOG_FORMAT, datefmt=LOG_DATE_FORMAT))
 
-# Add directly to the root logger — basicConfig() is a no-op if uvicorn
-# has already attached its own handlers, so we bypass it entirely.
 _root_logger = logging.getLogger()
 _root_logger.setLevel(logging.INFO)
 _root_logger.addHandler(_file_handler)
 
 logger = logging.getLogger(__name__)
 
+# ---------------------------------------------------------------------------
+# App + CORS
+# ---------------------------------------------------------------------------
+
 app = FastAPI(title="Alpha SRE")
+
+# Allow the frontend to call these endpoints from a different origin.
+# ALLOWED_ORIGINS env var overrides the default for production deployments.
+_origins = os.environ.get("ALLOWED_ORIGINS", "http://localhost:3000").split(",")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=_origins,
+    allow_methods=["GET", "POST"],
+    allow_headers=["*"],
+)
 
 # ---------------------------------------------------------------------------
 # Runtime setup
 # ---------------------------------------------------------------------------
-# The runtime is created once at startup and reused for every request.
-# Agents are registered here. Each agent gets its own LLM client so
-# different models can be used per agent (one string swap to change model).
-#
-# Phase 3/4: swap StubAgent for real SRE agents (LogAgent, MetricsAgent, etc.)
 
 runtime = AlphaRuntime()
 
@@ -79,10 +100,99 @@ runtime = AlphaRuntime()
 # from sre.agents.log_agent import LogAgent
 # from sre.agents.metrics_agent import MetricsAgent
 # from sre.agents.commit_agent import CommitAgent
+# from llm.openrouter import OpenRouterClient
 #
 # runtime.register(LogAgent(llm=OpenRouterClient("anthropic/claude-sonnet-4-5")))
 # runtime.register(MetricsAgent(llm=OpenRouterClient("google/gemini-2.0-flash-001")))
 # runtime.register(CommitAgent(llm=OpenRouterClient("anthropic/claude-sonnet-4-5")))
+
+# ---------------------------------------------------------------------------
+# Execution store
+# ---------------------------------------------------------------------------
+
+class ExecutionRecord(BaseModel):
+    """A single analysis run — what the frontend polls for.
+
+    status lifecycle:
+        "pending"  → created when webhook arrives, before analysis starts
+        "complete" → analysis finished, hypotheses and signals populated
+        "failed"   → analysis raised an unhandled exception, error is set
+    """
+    execution_id: str
+    status: Literal["pending", "complete", "failed"]
+    sentry_issue_id: str | None = None
+    deployment_id: str | None = None
+    requires_human_review: bool | None = None
+    hypotheses: list[dict] = []
+    signals: list[dict] = []
+    error: str | None = None
+    created_at: str = ""
+
+
+# In-memory store: execution_id → ExecutionRecord.
+# Lost on server restart — swap for SQLite or Redis when persistence matters.
+_store: dict[str, ExecutionRecord] = {}
+_latest_id: str | None = None
+
+
+def _save(record: ExecutionRecord) -> None:
+    """Write a record to the store and update the latest pointer."""
+    global _latest_id
+    _store[record.execution_id] = record
+    _latest_id = record.execution_id
+
+
+# ---------------------------------------------------------------------------
+# Background analysis task
+# ---------------------------------------------------------------------------
+
+async def _run_analysis(execution_id: str, payload: SentryWebhookPayload) -> None:
+    """Fetch enrichment, run the pipeline, and update the store.
+
+    Runs after the webhook handler has already returned 200 to Sentry.
+    All failures are caught and recorded as status="failed" so the frontend
+    always gets a terminal state rather than an entry stuck on "pending".
+
+    Args:
+        execution_id: Pre-generated ID that was returned to Sentry and the
+            frontend. Used as the store key throughout.
+        payload: Parsed Sentry webhook payload with issue_id and project info.
+    """
+    try:
+        sentry_data = await fetch_enrichment(payload)
+        github_data = _stub_github_enrichment()
+
+        incident = IncidentInput(
+            deployment_id=sentry_data["deployment_id"],
+            logs=sentry_data["logs"],
+            metrics=sentry_data["metrics"],
+            recent_commits=github_data["recent_commits"],
+            config_snapshot=github_data["config_snapshot"],
+        )
+
+        result = await runtime.execute(incident)
+
+        _save(_store[execution_id].model_copy(update={
+            "status": "complete",
+            "deployment_id": result.execution_id,
+            "requires_human_review": result.requires_human_review,
+            "hypotheses": [h.model_dump() for h in result.ranked_hypotheses],
+            "signals": [s.model_dump() for s in result.signals_used],
+        }))
+
+        logger.info(
+            "Analysis complete for issue %s. %d hypotheses. Human review: %s.",
+            payload.issue_id,
+            len(result.ranked_hypotheses),
+            result.requires_human_review,
+        )
+
+    except Exception as exc:
+        logger.error("Analysis failed for execution %s: %s", execution_id, exc)
+        _save(_store[execution_id].model_copy(update={
+            "status": "failed",
+            "error": str(exc),
+        }))
 
 
 # ---------------------------------------------------------------------------
@@ -91,8 +201,6 @@ runtime = AlphaRuntime()
 
 @app.get("/health")
 def health():
-    """Simple liveness check. Used by deployment platforms to verify the
-    server is running before routing traffic to it."""
     return {"status": "ok"}
 
 
@@ -103,52 +211,31 @@ def health():
 @app.post("/webhooks/sentry")
 async def sentry_webhook(
     request: Request,
+    background_tasks: BackgroundTasks,
     sentry_hook_signature: str = Header(default=None),
 ):
-    """Receive a Sentry issue-alert webhook and run the Alpha SRE pipeline.
+    """Receive a Sentry webhook, create a pending execution, return immediately.
 
-    Flow:
-        1. Read raw body (needed for HMAC verification before parsing)
-        2. Verify Sentry signature — reject with 401 if invalid
-        3. Parse the webhook payload to extract issue_id, project, org
-        4. Fetch Sentry enrichment (logs, metrics) via Sentry API
-        5. Fetch GitHub enrichment (commits, config snapshot) — stub for now
-        6. Build IncidentInput and call AlphaRuntime.execute()
-        7. Return ranked hypotheses as JSON
+    The webhook handler no longer runs the analysis pipeline directly.
+    Instead it validates the request, creates a pending record in the store,
+    and hands the actual work off to a background task. This means Sentry
+    gets its 200 in milliseconds rather than waiting for LLM calls to finish.
 
-    Sentry retries webhooks on non-2xx responses, so always return 200
-    once the signature is validated — even if analysis fails. Log failures
-    internally rather than surfacing them as HTTP errors (which would cause
-    Sentry to retry and flood the queue).
-
-    Args:
-        request:                 FastAPI request object.
-        sentry_hook_signature:   Value of the 'sentry-hook-signature' header
-                                 that Sentry attaches to every webhook POST.
+    The execution_id returned here is what the frontend uses to poll
+    GET /executions/{id} for results.
     """
-
-    # Step 1 — read raw body before any parsing.
-    # FastAPI reads the body stream once. We need raw bytes for HMAC
-    # verification, so we read it here before calling request.json().
     body = await request.body()
 
-    # Step 2 — verify the Sentry HMAC signature.
-    # This ensures the request actually came from Sentry and not an
-    # arbitrary caller. Without this, anyone could POST to this endpoint
-    # and trigger an analysis run.
+    # Signature verification
     client_secret = os.environ.get("SENTRY_CLIENT_SECRET", "")
-
     if client_secret and sentry_hook_signature:
         if not verify_sentry_signature(body, sentry_hook_signature, client_secret):
             logger.warning("Rejected webhook: invalid Sentry signature.")
             raise HTTPException(status_code=401, detail="Invalid signature.")
     else:
-        # No secret configured — skip verification in local development.
-        # Never deploy without SENTRY_CLIENT_SECRET set.
         logger.warning("SENTRY_CLIENT_SECRET not set — skipping signature check.")
 
-    # Step 3 — parse the webhook payload.
-    import json
+    # Parse payload
     try:
         raw = json.loads(body)
         payload = parse_webhook_payload(raw)
@@ -156,60 +243,65 @@ async def sentry_webhook(
         logger.error("Failed to parse Sentry webhook payload: %s", exc)
         raise HTTPException(status_code=400, detail=f"Malformed payload: {exc}")
 
-    # Only process new issues, not re-opens or assignments.
     if payload.action != "created":
-        logger.info("Ignoring webhook action '%s' — only 'created' triggers analysis.", payload.action)
+        logger.info("Ignoring webhook action '%s'.", payload.action)
         return {"status": "ignored", "reason": f"action={payload.action}"}
 
-    logger.info(
-        "Processing Sentry issue %s from project '%s'.",
-        payload.issue_id,
-        payload.project_slug,
-    )
-
-    # Step 4 — fetch Sentry enrichment (logs, metrics, deployment_id).
-    # Live if SENTRY_AUTH_TOKEN is set, fixture otherwise. See sre/integrations/sentry.py.
-    sentry_data = await fetch_enrichment(payload)
-
-    # Step 5 — fetch GitHub enrichment (recent commits, config snapshot).
-    # TODO Phase 4: replace stub with real GitHubClient calls.
-    # from sre.integrations.github import GitHubClient
-    # github = GitHubClient(token=os.environ["GITHUB_TOKEN"])
-    # github_data = github.fetch_enrichment(
-    #     repo=os.environ["GITHUB_REPO"],          # e.g. "acme-corp/backend"
-    #     since_sha=sentry_data["deployment_id"],
-    # )
-    github_data = _stub_github_enrichment()
-
-    # Step 6 — build IncidentInput and run the pipeline.
-    # IncidentInput is the contract between the intake layer and the runtime.
-    # Everything above this line is intake; everything below is runtime.
-    incident = IncidentInput(
-        deployment_id=sentry_data["deployment_id"],
-        logs=sentry_data["logs"],
-        metrics=sentry_data["metrics"],
-        recent_commits=github_data["recent_commits"],
-        config_snapshot=github_data["config_snapshot"],
-    )
-
-    result = await runtime.execute(incident)
+    # Create a pending record so the frontend has something to poll immediately
+    execution_id = str(uuid.uuid4())
+    _save(ExecutionRecord(
+        execution_id=execution_id,
+        status="pending",
+        sentry_issue_id=payload.issue_id,
+        created_at=datetime.now(timezone.utc).isoformat(),
+    ))
 
     logger.info(
-        "Analysis complete for issue %s. %d hypotheses. Human review: %s.",
+        "Accepted Sentry issue %s → execution %s (pending).",
         payload.issue_id,
-        len(result.ranked_hypotheses),
-        result.requires_human_review,
+        execution_id,
     )
 
-    # Step 7 — return the result.
-    # For the hackathon, return JSON directly.
-    # TODO Phase 4: also post to Slack or comment on the Sentry issue.
-    # await post_to_slack(result)
-    return {
-        "execution_id": result.execution_id,
-        "requires_human_review": result.requires_human_review,
-        "hypotheses": [h.model_dump() for h in result.ranked_hypotheses],
-    }
+    # Hand off to background task — this runs after the 200 is sent to Sentry
+    background_tasks.add_task(_run_analysis, execution_id, payload)
+
+    return {"execution_id": execution_id, "status": "pending"}
+
+
+# ---------------------------------------------------------------------------
+# Results API — frontend polling endpoints
+# ---------------------------------------------------------------------------
+
+@app.get("/executions/latest", response_model=ExecutionRecord)
+def get_latest_execution():
+    """Return the most recent execution record.
+
+    The frontend polls this endpoint after a Sentry alert fires. The status
+    field tells the frontend what to render:
+        "pending"  → show a loading state
+        "complete" → render hypotheses and signals
+        "failed"   → show an error message
+
+    Returns 404 if no executions have run yet.
+    """
+    if _latest_id is None or _latest_id not in _store:
+        raise HTTPException(status_code=404, detail="No executions yet.")
+    return _store[_latest_id]
+
+
+@app.get("/executions/{execution_id}", response_model=ExecutionRecord)
+def get_execution(execution_id: str):
+    """Return a specific execution record by ID.
+
+    Use this when the frontend received an execution_id from the webhook
+    response (via your own notification layer) and wants to fetch that
+    specific result rather than the latest.
+
+    Returns 404 if the execution_id is not found.
+    """
+    if execution_id not in _store:
+        raise HTTPException(status_code=404, detail=f"Execution '{execution_id}' not found.")
+    return _store[execution_id]
 
 
 # ---------------------------------------------------------------------------
@@ -217,16 +309,10 @@ async def sentry_webhook(
 # ---------------------------------------------------------------------------
 
 def _stub_github_enrichment() -> dict:
-    """Return fixture commit and config data for Incident B.
+    """Return fixture commit and config data.
 
-    Phase 4 replaces this with a real GitHubClient that:
-    - Calls GET /repos/{owner}/{repo}/commits?since={deploy_sha}
-    - Calls GET /repos/{owner}/{repo}/contents/config.py?ref={sha}
-    and returns the same shape as this stub.
+    Phase 4 replaces this with a real GitHubClient.
     """
-    import json
-    import pathlib
-
     fixture_path = pathlib.Path(__file__).parent / "fixtures" / "incident_b.json"
 
     if fixture_path.exists():
@@ -242,11 +328,8 @@ def _stub_github_enrichment() -> dict:
             {
                 "sha": "a1b2c3d",
                 "message": "Remove cache from user profile endpoint",
-                "diff_summary": "Removed @cache decorator from get_user_profile(). Added SELECT * FROM users JOIN orders query without index.",
+                "diff_summary": "Removed @cache decorator. Added unindexed JOIN query.",
             },
         ],
-        "config_snapshot": {
-            "MAX_DB_CONNECTIONS": 5,
-            "CACHE_TTL_SECONDS": 0,
-        },
+        "config_snapshot": {"MAX_DB_CONNECTIONS": 5, "CACHE_TTL_SECONDS": 0},
     }
