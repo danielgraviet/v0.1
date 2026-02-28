@@ -19,6 +19,7 @@ judge/, aggregation/, and schemas/. The SRE vertical imports from the
 runtime — never the reverse.
 """
 
+import asyncio
 import logging
 
 from agents.base import AgentContext, BaseAgent
@@ -76,7 +77,11 @@ class AlphaRuntime:
         self._registry.register(agent)
         logger.debug("Registered agent '%s'. Total agents: %d.", agent.name, len(self._registry))
 
-    async def execute(self, payload: IncidentInput) -> ExecutionResult:
+    async def execute(
+        self,
+        payload: IncidentInput,
+        event_queue: asyncio.Queue | None = None,
+    ) -> ExecutionResult:
         """Run the full pipeline for one incident and return ranked hypotheses.
 
         This method is the only way to trigger the pipeline. It is async
@@ -134,7 +139,7 @@ class AlphaRuntime:
         # The executor returns only results from agents that completed
         # successfully. Timed-out or errored agents are logged and excluded.
         agents = self._registry.get_all()
-        raw_results = await self._executor.execute(agents, context)
+        raw_results = await self._executor.execute(agents, context, event_queue)
         logger.info(
             "%d/%d agents returned results.",
             len(raw_results),

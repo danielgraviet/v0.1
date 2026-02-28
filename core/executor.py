@@ -13,6 +13,7 @@ import logging
 import time
 
 from agents.base import AgentContext, BaseAgent
+from schemas.events import AgentEvent, EventType
 from schemas.result import AgentResult
 
 logger = logging.getLogger(__name__)
@@ -49,6 +50,7 @@ class ParallelExecutor:
         self,
         agents: list[BaseAgent],
         context: AgentContext,
+        event_queue: asyncio.Queue | None = None,
     ) -> list[AgentResult]:
         """Run all agents concurrently and return their results.
 
@@ -64,6 +66,10 @@ class ParallelExecutor:
                 AgentRegistry.get_all().
             context: The shared context passed to every agent — signals and
                 incident metadata from StructuredMemory.
+            event_queue: Optional asyncio.Queue to emit AgentEvents into.
+                The display layer reads from this queue to update live panels.
+                If None, events are silently skipped — the runtime is
+                unaffected by whether anything is listening.
 
         Returns:
             List of AgentResult objects from agents that completed
@@ -73,10 +79,12 @@ class ParallelExecutor:
         if not agents:
             return []
 
+        exec_start = time.perf_counter()
+
         async with asyncio.TaskGroup() as tg:
             tasks = [
                 tg.create_task(
-                    self._run_agent_safely(agent, context),
+                    self._run_agent_safely(agent, context, event_queue, exec_start),
                     name=agent.name,
                 )
                 for agent in agents
@@ -88,6 +96,8 @@ class ParallelExecutor:
         self,
         agent: BaseAgent,
         context: AgentContext,
+        event_queue: asyncio.Queue | None,
+        exec_start: float,
     ) -> AgentResult | None:
         """Run a single agent with timeout and exception handling.
 
@@ -98,27 +108,48 @@ class ParallelExecutor:
 
         The executor measures wall-clock time and writes it into the
         returned AgentResult, overriding whatever the agent reported.
+        It also emits STARTED, COMPLETE, and ERROR events to the queue
+        if one was provided.
 
         Args:
             agent: The agent to run.
             context: Shared execution context.
+            event_queue: Queue to emit events into. None means no events.
+            exec_start: perf_counter() value from when execute() was called.
+                Used to compute relative timestamps for events.
 
         Returns:
             The agent's AgentResult with execution_time_ms filled in by
             the executor, or None if the agent timed out or raised.
         """
-        start = time.perf_counter()
+        agent_start = time.perf_counter()
+
+        async def emit(event_type: EventType, message: str) -> None:
+            if event_queue is not None:
+                ts_ms = (time.perf_counter() - exec_start) * 1000
+                await event_queue.put(AgentEvent(
+                    agent_name=agent.name,
+                    event_type=event_type,
+                    message=message,
+                    timestamp_ms=ts_ms,
+                ))
+
+        await emit(EventType.STARTED, "analyzing...")
 
         try:
             result = await asyncio.wait_for(
                 agent.run(context),
                 timeout=self.timeout_seconds,
             )
-            elapsed_ms = (time.perf_counter() - start) * 1000
+            elapsed_ms = (time.perf_counter() - agent_start) * 1000
+            hypothesis_count = len(result.hypotheses)
+            noun = "hypothesis" if hypothesis_count == 1 else "hypotheses"
+            await emit(EventType.COMPLETE, f"{hypothesis_count} {noun} generated")
             return result.model_copy(update={"execution_time_ms": elapsed_ms})
 
         except asyncio.TimeoutError:
-            elapsed_ms = (time.perf_counter() - start) * 1000
+            elapsed_ms = (time.perf_counter() - agent_start) * 1000
+            await emit(EventType.ERROR, f"timed out after {elapsed_ms / 1000:.1f}s")
             logger.error(
                 "Agent '%s' timed out after %.1fs (limit: %ds) — skipping.",
                 agent.name,
@@ -128,7 +159,8 @@ class ParallelExecutor:
             return None
 
         except Exception as exc:
-            elapsed_ms = (time.perf_counter() - start) * 1000
+            elapsed_ms = (time.perf_counter() - agent_start) * 1000
+            await emit(EventType.ERROR, str(exc))
             logger.error(
                 "Agent '%s' raised after %.0fms — skipping. Error: %s",
                 agent.name,
