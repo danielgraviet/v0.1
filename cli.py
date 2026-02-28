@@ -13,6 +13,7 @@ import json
 import pathlib
 
 from rich.console import Console
+from rich.panel import Panel
 from rich.table import Table
 
 from core.runtime import AlphaRuntime
@@ -23,6 +24,7 @@ from sre.agents.commit_agent import CommitAgent
 from sre.agents.config_agent import ConfigAgent
 from sre.agents.log_agent import LogAgent
 from sre.agents.metrics_agent import MetricsAgent
+from sre.agents.synthesis_agent import SynthesisAgent
 
 console = Console()
 
@@ -32,32 +34,41 @@ _FIXTURE = pathlib.Path(__file__).parent / "fixtures" / "incident_b.json"
 # ── Results table ─────────────────────────────────────────────────────────────
 
 def _print_results(result) -> None:
-    """Render the final ranked hypothesis table and human review flag."""
+    """Render ranked hypotheses, synthesis summary, and review status."""
     if not result.ranked_hypotheses:
         console.print("\n[yellow]No hypotheses produced.[/yellow]")
-        return
+    else:
+        table = Table(title="Ranked Hypotheses", show_lines=True, border_style="bright_black")
+        table.add_column("#",          style="dim",   width=3,  justify="right")
+        table.add_column("Label",      style="bold",  min_width=28)
+        table.add_column("Confidence", width=12,      justify="center")
+        table.add_column("Severity",   width=10,      justify="center")
+        table.add_column("Agents",     style="dim",   min_width=20)
 
-    table = Table(title="Ranked Hypotheses", show_lines=True, border_style="bright_black")
-    table.add_column("#",          style="dim",   width=3,  justify="right")
-    table.add_column("Label",      style="bold",  min_width=28)
-    table.add_column("Confidence", width=12,      justify="center")
-    table.add_column("Severity",   width=10,      justify="center")
-    table.add_column("Agents",     style="dim",   min_width=20)
+        for i, h in enumerate(result.ranked_hypotheses, 1):
+            conf_color = "green" if h.confidence >= 0.8 else "yellow" if h.confidence >= 0.6 else "red"
+            sev_color  = "red"   if h.severity == "high" else "yellow" if h.severity == "medium" else "dim"
 
-    for i, h in enumerate(result.ranked_hypotheses, 1):
-        conf_color = "green" if h.confidence >= 0.8 else "yellow" if h.confidence >= 0.6 else "red"
-        sev_color  = "red"   if h.severity == "high" else "yellow" if h.severity == "medium" else "dim"
+            table.add_row(
+                str(i),
+                h.label,
+                f"[{conf_color}]{h.confidence:.0%}[/{conf_color}]",
+                f"[{sev_color}]{h.severity}[/{sev_color}]",
+                h.contributing_agent,
+            )
 
-        table.add_row(
-            str(i),
-            h.label,
-            f"[{conf_color}]{h.confidence:.0%}[/{conf_color}]",
-            f"[{sev_color}]{h.severity}[/{sev_color}]",
-            h.contributing_agent,
+        console.print()
+        console.print(table)
+
+    if result.synthesis:
+        synthesis = result.synthesis
+        synth_text = (
+            f"[bold]Key finding:[/bold] {synthesis.key_finding}\n\n"
+            f"[bold]Summary:[/bold] {synthesis.summary}\n\n"
+            f"[bold]Confidence in ranking:[/bold] {synthesis.confidence_in_ranking:.0%}"
         )
-
-    console.print()
-    console.print(table)
+        console.print()
+        console.print(Panel(synth_text, title="Synthesis", border_style="cyan"))
 
     review = (
         "[bold red]⚠  Requires human review[/bold red]"
@@ -79,6 +90,7 @@ async def _run() -> None:
     runtime.register(MetricsAgent(llm=OpenRouterClient("google/gemini-2.0-flash-001")))
     runtime.register(CommitAgent(llm=OpenRouterClient("anthropic/claude-sonnet-4-6")))
     runtime.register(ConfigAgent(llm=OpenRouterClient("google/gemini-2.0-flash-001")))
+    runtime.set_synthesizer(SynthesisAgent(llm=OpenRouterClient("anthropic/claude-sonnet-4-6")))
 
     agent_names = [a.name for a in runtime._registry.get_all()]
     display = LiveDisplay(agent_names)

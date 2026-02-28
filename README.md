@@ -53,17 +53,21 @@ cd v0.1
 make setup      # install dependencies
 make serve      # start web dashboard at http://127.0.0.1:8000
 make test       # run offline tests (no network)
-make test-live  # run live API tests (requires OPENROUTER_API_KEY + network)
-make run        # run CLI entrypoint
+make test-live  # run live API tests (requires network + provider API key)
+make run        # start webhook API on http://127.0.0.1:8000
+make run-cli    # listen for webhooks + render live CLI orchestration
+make demo-webhook # post sample webhook + poll until complete
 make verify     # compile check + tests
 ```
 
 **Tooling commands (what they do)**
 - `make setup`: runs `uv sync --dev` to install app + dev dependencies into `.venv` (preferred onboarding path).
+- `make run`: starts the real webhook API (`main:app`) with auto reload for the demo flow.
+- `make run-cli`: starts `main.py` webhook listener in CLI live mode. Incoming Sentry webhooks trigger Rich live agent panels and a terminal summary.
+- `make demo-webhook`: posts a sample webhook to `POST /webhooks/sentry` and polls execution status.
 - `make serve`: starts the FastAPI dashboard server with hot reload at `http://127.0.0.1:8000`.
-- `make run`: runs `main.py` using the project virtualenv.
 - `make test`: runs deterministic/offline pytest only (`-m "not live"`), so it works in CI and no-network environments.
-- `make test-live`: runs only live API tests (`-m "live"`), intended for explicit OpenRouter connectivity checks.
+- `make test-live`: runs only live API tests (`-m "live"`), intended for explicit provider connectivity checks.
 - `make check`: runs `python -m compileall -q .` to catch syntax/import-level issues quickly.
 - `make verify`: runs `check` then `test` as the default pre-commit sanity check.
 
@@ -91,6 +95,7 @@ cp .env.example .env
 Open `.env` and replace the placeholder:
 ```
 OPENROUTER_API_KEY=your_openrouter_key_here
+CEREBRAS_API_KEY=your_cerebras_key_here
 ```
 
 Get an API key at [openrouter.ai](https://openrouter.ai). OpenRouter gives access to Anthropic, Google, and other models through a single key.
@@ -109,9 +114,9 @@ Get an API key at [openrouter.ai](https://openrouter.ai). OpenRouter gives acces
 
 | Package | Version | Purpose |
 |---------|---------|---------|
-| `openai` | ≥2.24.0 | OpenRouter API client (OpenAI-compatible) |
+| `openai` | ≥2.24.0 | OpenAI-compatible client used for OpenRouter and Cerebras |
 | `pydantic` | ≥2.12.5 | Typed schemas and runtime validation |
-| `python-dotenv` | ≥1.2.1 | Loads `OPENROUTER_API_KEY` from `.env` |
+| `python-dotenv` | ≥1.2.1 | Loads provider API keys from `.env` |
 | `rich` | ≥14.3.3 | Live terminal display — one panel per agent |
 | `fastapi` | ≥0.134.0 | Web dashboard server |
 | `uvicorn` | ≥0.41.0 | ASGI server for FastAPI |
@@ -138,7 +143,8 @@ This updates both `pyproject.toml` and `uv.lock`. Commit both files.
 │
 ├── llm/                  # LLM provider abstraction
 │   ├── base.py           # LLMClient abstract base — the interface all providers implement
-│   └── openrouter.py     # OpenRouterClient — one key, all models
+│   ├── openrouter.py     # OpenRouterClient — OpenRouter models via one key
+│   └── cerebras.py       # CerebrasClient — direct Cerebras provider client
 │
 ├── agents/               # Agent base class
 │   └── base.py           # BaseAgent — abstract class all SRE agents extend

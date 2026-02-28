@@ -50,10 +50,11 @@ make setup
 cp .env.example .env
 ```
 
-Add your OpenRouter key to `.env`:
+Add your provider key(s) to `.env`:
 
 ```bash
 OPENROUTER_API_KEY=your_openrouter_key_here
+CEREBRAS_API_KEY=your_cerebras_key_here
 ```
 
 Sanity checks:
@@ -138,9 +139,11 @@ An engineer is ramped when they can do all of the following:
 
 ```bash
 make setup      # install dependencies
-make run        # run local entrypoint
+make run        # start webhook API (main.py via uvicorn)
+make run-cli    # webhook listener + live CLI orchestration
+make demo-webhook  # send sample webhook + poll result
 make check      # syntax/import compile check
 make test       # offline deterministic tests
-make test-live  # live OpenRouter tests
+make test-live  # live provider tests
 make verify     # check + test
 ```
