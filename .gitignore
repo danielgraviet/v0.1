@@ -2,3 +2,4 @@
 .dmux
 __pycache__/
 *.pyc
+*.log
