@@ -11,9 +11,9 @@
 :root {
   --bg:          #0a0a0a;
   --surface:     #111111;
-  --surface-2:   #181818;
+  --surface-2:   #212121; /* lighter panel background */
+  --surface-3:   #282828; /* added third tier if needed */
   --border:      #252525;
-  --border-2:    #333333;
 
   --text:        #e0e0e0;
   --text-muted:  #555555;
@@ -21,8 +21,9 @@
 
   --green:       #22c55e;
   --green-dim:   #14532d;
-  --amber:       #f59e0b;
+  --amber:       #f59e0b;  /* unified interactive accent */
   --amber-dim:   #451a03;
+  --yellow:      #fde047;  /* brighter yellow for medium severity */
   --red:         #ef4444;
   --red-dim:     #450a0a;
   --blue:        #3b82f6;
@@ -49,8 +50,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 20px;
-  height: 44px;
+  padding: 10px 20px; /* more space above/below content */
+  height: 60px; /* increased height to give breathing room */
   background: var(--surface);
   border-bottom: 1px solid var(--border);
   position: sticky;
@@ -65,14 +66,14 @@ body {
 }
 
 .logo {
-  font-size: 14px;
+  font-size: 18px; /* larger for prominence */
   font-weight: 600;
   letter-spacing: 0.1em;
   color: var(--text);
 }
 
 .version {
-  font-size: 11px;
+  font-size: 13px; /* bumped up slightly */
   color: var(--text-muted);
 }
 
@@ -117,9 +118,10 @@ body {
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: auto auto;
-  gap: 1px;
+  gap: 2px; /* stronger crate border */
   background: var(--border);
-  min-height: calc(100vh - 44px - 36px);
+  min-height: calc(100vh - 60px - 36px); /* adjusted for taller header */
+  margin-top: 10px; /* extra gap between header and first panel */
 }
 
 /* ─── Panels ─────────────────────────────────────────────────────────────── */
@@ -129,6 +131,12 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 300px;
+}
+
+/* make the bottom row panels shorter so the top row has more space */
+#panel-signals,
+#panel-hypotheses {
+  min-height: 100px;
 }
 
 .panel-header {
@@ -146,6 +154,7 @@ body {
   font-weight: 600;
   letter-spacing: 0.1em;
   color: var(--text-dim);
+  text-transform: uppercase;
 }
 
 .panel-meta {
@@ -154,7 +163,7 @@ body {
 }
 
 .panel-body {
-  padding: 16px;
+  padding: 20px; /* consistent gutter */
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -196,11 +205,13 @@ body {
   border-radius: var(--radius);
   padding: 8px 20px;
   cursor: pointer;
-  transition: opacity 0.15s;
+  transition: background 0.2s, opacity 0.15s;
+  text-transform: uppercase;
 }
 
 .btn:hover {
   opacity: 0.85;
+  background: var(--amber);
 }
 
 .btn:disabled {
@@ -212,6 +223,11 @@ body {
   background: var(--text);
   color: var(--bg);
   border-color: var(--text);
+}
+
+/* make the primary analyze button text appear bold */
+#analyze-btn {
+  font-weight: 700;
 }
 
 .btn--approve {
@@ -242,10 +258,13 @@ body {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.6);
 }
 
 .agent-card--wide {
   grid-column: span 2;
+  margin-top: 30px;
+  position: relative;
 }
 
 .agent-name {
@@ -275,6 +294,7 @@ body {
   padding: 2px 7px;
   border-radius: var(--radius);
   border: 1px solid;
+  text-transform: uppercase;
 }
 
 .badge--pending {
@@ -318,6 +338,7 @@ body {
   grid-template-columns: auto 1fr auto;
   align-items: start;
   gap: 10px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.5);
 }
 
 .signal-type {
@@ -347,7 +368,7 @@ body {
 
 .severity--critical { color: var(--red); }
 .severity--high     { color: var(--amber); }
-.severity--medium   { color: var(--text-dim); }
+.severity--medium   { color: var(--yellow); }
 .severity--low      { color: var(--text-muted); }
 
 /* ─── Hypotheses list ────────────────────────────────────────────────────── */

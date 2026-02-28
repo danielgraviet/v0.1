@@ -13,11 +13,11 @@ const AlphaSRE = (() => {
   const AGENT_IDS = ["agent-log", "agent-metrics", "agent-commit", "agent-config", "agent-synthesis"];
 
   const AGENT_LABELS = {
-    "agent-log":       "LogAgent",
-    "agent-metrics":   "MetricsAgent",
-    "agent-commit":    "CommitAgent",
-    "agent-config":    "ConfigAgent",
-    "agent-synthesis": "SynthesisAgent",
+    "agent-log":       "Log Agent",
+    "agent-metrics":   "Metrics Agent",
+    "agent-commit":    "Commit Agent",
+    "agent-config":    "Config Agent",
+    "agent-synthesis": "Synthesis Agent",
   };
 
   let _running = false;
@@ -131,7 +131,7 @@ const AlphaSRE = (() => {
             <div class="hypothesis-header">
               <span class="hypothesis-rank">#${i + 1}</span>
               <span class="hypothesis-label">${escapeHtml(h.label)}</span>
-              <span class="hypothesis-confidence confidence--${cls}">${pct}%</span>
+              <span class="hypothesis-confidence confidence--${cls}">${pct}% Confidence</span>
             </div>
             <div class="confidence-bar-track">
               <div class="confidence-bar-fill confidence-bar-fill--${cls === "high" ? "" : cls}" style="width:${pct}%"></div>
