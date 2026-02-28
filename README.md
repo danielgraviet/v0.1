@@ -50,15 +50,17 @@ cd v0.1
 
 **Quick commands (canonical)**
 ```bash
-make setup   # install dependencies
-make test    # run offline tests (no network)
+make setup      # install dependencies
+make serve      # start web dashboard at http://127.0.0.1:8000
+make test       # run offline tests (no network)
 make test-live  # run live API tests (requires OPENROUTER_API_KEY + network)
-make run     # run entrypoint
-make verify  # compile check + tests
+make run        # run CLI entrypoint
+make verify     # compile check + tests
 ```
 
 **Tooling commands (what they do)**
 - `make setup`: runs `uv sync --dev` to install app + dev dependencies into `.venv` (preferred onboarding path).
+- `make serve`: starts the FastAPI dashboard server with hot reload at `http://127.0.0.1:8000`.
 - `make run`: runs `main.py` using the project virtualenv.
 - `make test`: runs deterministic/offline pytest only (`-m "not live"`), so it works in CI and no-network environments.
 - `make test-live`: runs only live API tests (`-m "live"`), intended for explicit OpenRouter connectivity checks.
@@ -111,6 +113,8 @@ Get an API key at [openrouter.ai](https://openrouter.ai). OpenRouter gives acces
 | `pydantic` | ≥2.12.5 | Typed schemas and runtime validation |
 | `python-dotenv` | ≥1.2.1 | Loads `OPENROUTER_API_KEY` from `.env` |
 | `rich` | ≥14.3.3 | Live terminal display — one panel per agent |
+| `fastapi` | ≥0.134.0 | Web dashboard server |
+| `uvicorn` | ≥0.41.0 | ASGI server for FastAPI |
 
 To add a new dependency:
 ```bash
@@ -167,6 +171,13 @@ This updates both `pyproject.toml` and `uv.lock`. Commit both files.
 │   ├── phase_3.md        # Signal extraction layer
 │   └── phase_4.md        # SRE agents with live LLM calls
 │
+├── frontend/             # Web dashboard
+│   ├── index.html        # Dashboard UI
+│   └── static/
+│       ├── style.css     # Engineering-first dark theme
+│       └── app.js        # Agent status, signals, and hypothesis rendering
+│
+├── server.py             # FastAPI server — run with `make serve`
 ├── pyproject.toml        # Project metadata and direct dependencies
 ├── uv.lock               # Pinned dependency tree — always commit this
 ├── .env.example          # Required variable names with placeholders — commit this
