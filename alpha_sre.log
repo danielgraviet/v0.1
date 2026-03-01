@@ -2351,3 +2351,4 @@ For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/St
 2026-02-28 16:57:18  ERROR     signals.signal_extractor  Analyzer LogAnalyzer failed — skipping. Error: boom
 2026-02-28 16:57:18  ERROR     sre.agents.synthesis_agent  synthesis_agent: failed to parse LLM response: No valid JSON found in LLM response for schema _SynthesisSchema
 Raw: not json
+2026-02-28 16:15:59  INFO      main  Auto-registered 4 agents + synthesis using provider='openrouter'.
