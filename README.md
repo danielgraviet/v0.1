@@ -62,7 +62,7 @@ make verify     # compile check + tests
 
 **Tooling commands (what they do)**
 - `make setup`: runs `uv sync --dev` to install app + dev dependencies into `.venv` (preferred onboarding path).
-- `make run`: starts the real webhook API (`main:app`) with auto reload for the demo flow.
+- `make run`: starts the real webhook API (`main:app`) with auto reload for the demo flow. Also serves the web dashboard at `http://127.0.0.1:8000`.
 - `make run-cli`: starts `main.py` webhook listener in CLI live mode. Incoming Sentry webhooks trigger Rich live agent panels and a terminal summary.
 - `make demo-webhook`: posts a sample webhook to `POST /webhooks/sentry` and polls execution status.
 - `make serve`: starts the FastAPI dashboard server with hot reload at `http://127.0.0.1:8000`.
@@ -183,7 +183,8 @@ This updates both `pyproject.toml` and `uv.lock`. Commit both files.
 │       ├── style.css     # Engineering-first dark theme
 │       └── app.js        # Agent status, signals, and hypothesis rendering
 │
-├── server.py             # FastAPI server — run with `make serve`
+├── main.py               # Unified FastAPI server — run with `make serve`
+├── server.py             # Legacy dashboard server (superseded by main.py)
 ├── pyproject.toml        # Project metadata and direct dependencies
 ├── uv.lock               # Pinned dependency tree — always commit this
 ├── .env.example          # Required variable names with placeholders — commit this
