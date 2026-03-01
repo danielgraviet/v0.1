@@ -1,0 +1,146 @@
+(.venv) danielgraviet@Daniels-MacBook-Air-3 v0.1 % curl -s http://127.0.0.1:8000/executions/latest | jq
+{
+  "execution_id": "ef3bdc5f-0318-4b7c-b1d8-606b3bda71a4",
+  "status": "complete",
+  "sentry_issue_id": "7299453182",
+  "deployment_id": "c0aea4a6-2891-45c5-b2eb-39888c3c1e50",
+  "requires_human_review": false,
+  "hypotheses": [
+    {
+      "label": "Triple compounding DB pressure",
+      "description": "Cache removal (sig_004), an unindexed slow query (sig_005), and a drastically reduced connection pool (sig_006) together create a compounding effect: more frequent, slower queries compete for far fewer connections, almost certainly causing cascading timeouts and failures.",
+      "confidence": 0.93,
+      "severity": "high",
+      "supporting_signals": [
+        "sig_004",
+        "sig_005",
+        "sig_006"
+      ],
+      "contributing_agent": "commit_agent"
+    },
+    {
+      "label": "Database Operational Error on Profile Endpoint",
+      "description": "The `/api/users/profile/{user_id}` endpoint is throwing `OperationalError` (likely a database connectivity or query execution failure) at massive scale, accounting for 50% of all log traffic. This suggests the database layer backing user profile lookups is down, misconfigured, or exhausted its connection pool following the deployment `5532a31`.",
+      "confidence": 0.92,
+      "severity": "high",
+      "supporting_signals": [
+        "sig_001",
+        "sig_002"
+      ],
+      "contributing_agent": "log_agent"
+    },
+    {
+      "label": "Pool exhaustion from cache removal",
+      "description": "Removing the cache decorator (sig_004) caused all requests to hit the database directly, and the simultaneous reduction of the connection pool from 20 to 5 (sig_006) meant the system could no longer handle the resulting DB load, leading to pool exhaustion and user-facing failures.",
+      "confidence": 0.91,
+      "severity": "high",
+      "supporting_signals": [
+        "sig_004",
+        "sig_006"
+      ],
+      "contributing_agent": "commit_agent"
+    },
+    {
+      "label": "DB connection exhaustion",
+      "description": "Setting 'MAX_DB_CONNECTIONS' to 5 (sig_007) is unusually low and could easily lead to connection exhaustion under normal load or a traffic spike, causing database unavailability and application errors.",
+      "confidence": 0.9,
+      "severity": "high",
+      "supporting_signals": [
+        "sig_007"
+      ],
+      "contributing_agent": "config_agent"
+    },
+    {
+      "label": "Unindexed query overloads pool",
+      "description": "The newly added unindexed query (sig_005) produces slow full-table scans that hold DB connections for extended periods; combined with the pool reduction to 5 (sig_006), connections are exhausted quickly under normal traffic load.",
+      "confidence": 0.82,
+      "severity": "high",
+      "supporting_signals": [
+        "sig_005",
+        "sig_006"
+      ],
+      "contributing_agent": "commit_agent"
+    }
+  ],
+  "signals": [
+    {
+      "id": "sig_001",
+      "type": "log_anomaly",
+      "description": "Error rate is 50% — 50.0x above baseline of 1%",
+      "value": 50.0,
+      "severity": "high",
+      "source": "log_analyzer"
+    },
+    {
+      "id": "sig_002",
+      "type": "log_anomaly",
+      "description": "Dominant error: '/api/users/profile/{user_id} — OperationalError: (builtins.E' (100 occurrences, 50% of all logs)",
+      "value": 100.0,
+      "severity": "high",
+      "source": "log_analyzer"
+    },
+    {
+      "id": "sig_003",
+      "type": "metric_degradation",
+      "description": "Cache hit rate is 0% — below healthy threshold",
+      "value": 0.0,
+      "severity": "high",
+      "source": "metrics_analyzer"
+    },
+    {
+      "id": "sig_004",
+      "type": "commit_change",
+      "description": "Cache decorator removed in commit a1b2c3d",
+      "value": null,
+      "severity": "medium",
+      "source": "commit_analyzer"
+    },
+    {
+      "id": "sig_005",
+      "type": "commit_change",
+      "description": "Potentially unindexed query added in commit a1b2c3d",
+      "value": null,
+      "severity": "medium",
+      "source": "commit_analyzer"
+    },
+    {
+      "id": "sig_006",
+      "type": "commit_change",
+      "description": "DB connection pool reduced from 20 to 5 in commit e4f5g6h",
+      "value": 5.0,
+      "severity": "high",
+      "source": "commit_analyzer"
+    },
+    {
+      "id": "sig_007",
+      "type": "config_change",
+      "description": "Config 'MAX_DB_CONNECTIONS' is set to 5 — unusually low for a limit/capacity setting",
+      "value": 5.0,
+      "severity": "medium",
+      "source": "config_analyzer"
+    },
+    {
+      "id": "sig_008",
+      "type": "config_change",
+      "description": "Config 'CACHE_TTL_SECONDS' is set to 0 — unusually low for a limit/capacity setting",
+      "value": 0.0,
+      "severity": "medium",
+      "source": "config_analyzer"
+    },
+    {
+      "id": "sig_009",
+      "type": "config_change",
+      "description": "Feature flag 'new_query_engine' newly enabled",
+      "value": null,
+      "severity": "medium",
+      "source": "config_analyzer"
+    }
+  ],
+  "synthesis": {
+    "summary": "Three compounding changes introduced in recent commits are overwhelming the database layer: the cache decorator was removed (sig_004) forcing all requests to hit the database directly, an unindexed query was added (sig_005) causing slow full-table scans, and the connection pool was slashed from 20 to 5 (sig_006), leaving the system unable to handle the increased and slower DB load. This is directly evidenced by a 0% cache hit rate (sig_003), a 50% error rate dominated by OperationalErrors on the user profile endpoint (sig_001, sig_002), and confirmed by config settings of MAX_DB_CONNECTIONS=5 and CACHE_TTL_SECONDS=0 (sig_007, sig_008). The combination of these three factors creates a cascading failure where more frequent, slower queries compete for far too few connections.",
+    "key_finding": "The simultaneous removal of caching, addition of an unindexed query, and reduction of the DB connection pool to 5 are compounding to exhaust database connections and cause 50% error rates on the user profile endpoint.",
+    "confidence_in_ranking": 0.93
+  },
+  "error": null,
+  "created_at": "2026-03-01T00:05:00.524467+00:00"
+}
