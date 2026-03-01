@@ -24,7 +24,6 @@ build/
 htmlcov/
 .coverage
 coverage.xml
-alpha_sre.log
 
 # Virtual environments
 .venv/
@@ -42,4 +41,4 @@ ENV/
 .vscode/
 *.swp
 *.swo
-alpha_sre.log
+*.log
