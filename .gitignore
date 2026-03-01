@@ -41,3 +41,4 @@ ENV/
 .vscode/
 *.swp
 *.swo
+alpha_sre.log

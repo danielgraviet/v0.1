@@ -26,7 +26,7 @@ run-cli:
 	ALPHA_CLI_WEBHOOK_MODE=true .venv/bin/python -m uvicorn main:app --host 127.0.0.1 --port 8000
 
 serve:
-	.venv/bin/python server.py
+	.venv/bin/uvicorn main:app --reload --host 127.0.0.1 --port 8000
 
 demo-webhook:
 	.venv/bin/python scripts/demo_webhook.py
