@@ -6,7 +6,7 @@
  */
 
 const AlphaSRE = (() => {
-  const AGENT_IDS = ["agent-log", "agent-metrics", "agent-commit", "agent-config"];
+  const AGENT_IDS = ["agent-log", "agent-metrics", "agent-commit", "agent-config", "agent-synthesis"];
 
   let _running = false;
   let _startTime = null;
@@ -42,6 +42,7 @@ const AlphaSRE = (() => {
       metrics_agent: "agent-metrics",
       commit_agent: "agent-commit",
       config_agent: "agent-config",
+      synthesis_agent: "agent-synthesis",
     };
     return map[name] || null;
   }
@@ -96,6 +97,32 @@ const AlphaSRE = (() => {
       .join("");
   }
 
+  // ─── Signals list ──
+
+  function renderSignals(signals) {
+    const list = el("signals-list");
+    const counter = el("signals-count");
+
+    if (!signals || signals.length === 0) {
+      list.innerHTML = `<div class="empty-state">No signals extracted.</div>`;
+      counter.textContent = "0";
+      return;
+    }
+
+    counter.textContent = String(signals.length);
+    list.innerHTML = signals
+      .map((s) => {
+        const sev = (s.severity || "medium").toLowerCase();
+        return `
+          <div class="signal-item">
+            <span class="signal-type">${escapeHtml(s.type)}</span>
+            <span class="signal-desc">${escapeHtml(s.description)}</span>
+            <span class="signal-severity severity--${sev}">${escapeHtml(s.severity || "medium").toUpperCase()}</span>
+          </div>`;
+      })
+      .join("");
+  }
+
   // ─── Error display ──
 
   function showError(msg) {
@@ -128,7 +155,15 @@ const AlphaSRE = (() => {
   function handleResult(data) {
     stopTimer();
     setSystemStatus("complete");
+    renderSignals(data.signals || []);
     renderHypotheses(data.hypotheses || []);
+
+    // Synthesis agent card — runs after aggregation, not through the event queue
+    if (data.synthesis) {
+      setAgentStatus("agent-synthesis", "complete", data.synthesis.key_finding || "done");
+    } else {
+      setAgentStatus("agent-synthesis", "complete", "no synthesis produced");
+    }
 
     // Review flag (matches CLI footer)
     const flag = el("review-flag");
@@ -161,6 +196,7 @@ const AlphaSRE = (() => {
     setSystemStatus("running");
     resetAgents();
     el("review-flag").className = "hidden";
+    renderSignals([]);
     renderHypotheses([]);
     el("analyze-btn").disabled = true;
     startTimer();

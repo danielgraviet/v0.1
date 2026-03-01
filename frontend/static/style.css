@@ -459,6 +459,28 @@ body {
   color: var(--text-muted);
 }
 
+/* ─── Review flag ────────────────────────────────────────────────────────── */
+
+.review-flag {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 8px 12px;
+  border-radius: var(--radius);
+  border: 1px solid;
+}
+
+.review-flag--warn {
+  color: var(--amber);
+  border-color: var(--amber);
+  background: var(--amber-dim);
+}
+
+.review-flag--ok {
+  color: var(--green);
+  border-color: var(--green);
+  background: var(--green-dim);
+}
+
 /* ─── Approval gate ──────────────────────────────────────────────────────── */
 
 .approval-gate {
@@ -499,12 +521,25 @@ body {
   font-style: italic;
 }
 
+/* ─── Synthesis agent divider ────────────────────────────────────────────── */
+
+.agent-card--wide::before {
+  content: "";
+  position: absolute;
+  top: -16px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--border);
+}
+
 /* ─── Footer ─────────────────────────────────────────────────────────────── */
 
 #footer {
   height: 36px;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   padding: 0 20px;
   background: var(--surface);
   border-top: 1px solid var(--border);
