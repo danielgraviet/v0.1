@@ -15,12 +15,12 @@ Today, popular softwares like Pagerduty and Dynatrance tell you something is wro
 Introducing Alpha, an AI-powered incident investigator that acts like your 24/7 SRE team.
 
 Here’s how it works:
-Alpha integrates with the monitoring tools you already use, including Sentry, PostHog, Datadog, and New Relic.
+We didn't want to reinvent the wheel. We chose to deeply integrate with the monitoring tools you already use, including Sentry, PostHog, Datadog, and New Relic.
 When something breaks during deployment, Sentry notifies Alpha, and Alpha takes the investigation one level deeper.
 It correlates signals across logs, metrics, commits, and configuration changes to give engineers the full picture.
 
 ## During loading
-Alpha extracts objective signals from logs, metrics, commits, and configuration changes. It then runs multiple specialized AI analysts in parallel, each generating their independent hypotheses for why things went wrong.
+Alpha extracts objective signals from logs, metrics, commits, and configuration changes. Instead of one large monolithic LLM, it runs multiple specialized AI analysts in parallel, each generating their independent hypotheses for why things went wrong.
 
 Alpha then aggregates those hypotheses, ranks them, and presents the user with likely root causes to their problem.
 
